@@ -2,6 +2,7 @@ use_frameworks!
 
 target 'FlaatSDK_Example' do
   pod 'FlaatSDK', :path => '../'
+  pod 'TCNClient', :git => 'https://github.com/EQWorks/tcn-client-ios.git', :branch => 'master'
 
   target 'FlaatSDK_Tests' do
     inherit! :search_paths

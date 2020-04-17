@@ -8,15 +8,18 @@
 
 import UIKit
 import FlaatSDK
+import TCNClient
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    var bluetoothService: TCNBluetoothService!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         let reportUploader = ReportUploader()
+
+        runBluetoothService()
 
         reportUploader.uploadReport(validationPin: "dummy-pin") { (error) in
             print("finished uploading a report, error: \(error)")
@@ -47,6 +50,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    private func runBluetoothService() {
+        bluetoothService = TCNBluetoothService(tcnGenerator: { () -> Data in
+            return "this is a test key".data(using: .utf8)!
+        }, tcnFinder: { (data) in
+            NSLog("Data is here: \(data)")
+        }, errorHandler: { (error) in
+            NSLog("Bluetooth service error: \(error)")
+        })
+
+        bluetoothService.start()
+    }
 
 }
 
