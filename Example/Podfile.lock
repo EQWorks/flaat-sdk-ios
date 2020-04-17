@@ -1,0 +1,27 @@
+PODS:
+  - FlaatSDK (0.1.0)
+  - Nimble (7.3.4)
+  - Quick (1.2.0)
+
+DEPENDENCIES:
+  - FlaatSDK (from `../`)
+  - Nimble (~> 7.0)
+  - Quick (~> 1.2.0)
+
+SPEC REPOS:
+  trunk:
+    - Nimble
+    - Quick
+
+EXTERNAL SOURCES:
+  FlaatSDK:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  FlaatSDK: 1b193ec93a6fff26ebf445a37cfb290fa269c06b
+  Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
+  Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
+
+PODFILE CHECKSUM: 7343d7ff8913875a4cfccf00c3fb73f9ec3fe68c
+
+COCOAPODS: 1.9.0

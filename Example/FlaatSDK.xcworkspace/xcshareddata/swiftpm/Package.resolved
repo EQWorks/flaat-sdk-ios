@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "TCNClient",
+        "repositoryURL": "https://github.com/TCNCoalition/tcn-client-ios",
+        "state": {
+          "branch": "master",
+          "revision": "016275eb691c3d693404c46b58bc866660ca6381",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
