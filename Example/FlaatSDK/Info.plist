@@ -22,6 +22,8 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth is used to determine nearby devices of other people for contact tracing</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>bluetooth-central</string>
