@@ -1,11 +1,3 @@
-//
-//  AppDelegate.swift
-//  FlaatSDK
-//
-//  Created by parametr on 04/13/2020.
-//  Copyright (c) 2020 parametr. All rights reserved.
-//
-
 import UIKit
 import FlaatSDK
 import TCNClient
@@ -18,13 +10,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var bluetoothService: TCNBluetoothService!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        let reportUploader = ReportUploader()
 
+        FlaatService.launch(apiKey: "8b2156246175b06cdda68cfb2e3a86aa")
         runBluetoothService()
-
-        reportUploader.uploadReport(validationPin: "dummy-pin") { (error) in
-            print("finished uploading a report, error: \(error)")
-        }
 
         testCrypto()
 

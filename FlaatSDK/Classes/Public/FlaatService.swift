@@ -1,10 +1,3 @@
-//
-//  FlaatService.swift
-//  FlaatSDK
-//
-//  Created by Eugene Kolpakov on 2020-04-21.
-//
-
 import Foundation
 
 public class FlaatService {

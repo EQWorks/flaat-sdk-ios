@@ -1,10 +1,10 @@
 import Foundation
 
-@objc public class ReportUploader: NSObject {
+internal class ReportUploader: NSObject {
 
     private let geoHashPrecision = 6
 
-    @objc public func uploadReport(days: Int = 21, validationPin: String, completion: @escaping (Error?) -> Void) {
+    func uploadReport(days: Int = 21, validationPin: String, completion: @escaping (Error?) -> Void) {
         Log.info("Uploading report...")
 
         let locationReader = PrivateKitLocationReader()

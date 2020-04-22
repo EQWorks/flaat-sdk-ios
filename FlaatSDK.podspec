@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
   s.summary          = 'Flaat SDK provides a set of APIs to support COVID-19 contact tracing in any app'
   s.homepage         = 'https://github.com/eqworks/flaat-sdk-ios'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'parametr' => 'parametr@gmail.com' }
+  s.author           = { 'EQ-Works' => 'dilshank@eqworks.com' }
   s.source           = { :git => 'https://github.com/eqworks/flaat-sdk-ios.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '12.0'
