@@ -1,20 +1,24 @@
 import Foundation
 
-struct Log {
+public enum LogLevel: Int {
+    case debug
+    case info
+    case warning
+    case error
+}
 
-    enum Level: Int {
-        case debug
-        case info
-        case warning
-        case error
+internal extension LogLevel {
 
-        static func <=(_ left: Level, _ right: Level) -> Bool {
-            return left.rawValue <= right.rawValue
-        }
+    static func <=(_ left: LogLevel, _ right: LogLevel) -> Bool {
+        return left.rawValue <= right.rawValue
     }
 
+}
+
+internal struct Log {
+
     #if DEBUG
-    static var logLevel: Level = .debug
+    static var logLevel: LogLevel = .debug
     #else
     static var logLevel: Level = .info
     #endif

@@ -8,6 +8,7 @@ enum APIResult<T> {
 struct APIEndpoints {
 
     struct dev {
+        static let login = "https://api.flaat.io/dev/login"
         static let tcnReports = "https://api.flaat.io/dev/tcnreport"
     }
 

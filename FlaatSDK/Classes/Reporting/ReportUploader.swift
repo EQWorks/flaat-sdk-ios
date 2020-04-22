@@ -16,7 +16,7 @@ import Foundation
 
         let report = TCNReport(validationPin: validationPin, traces: reportedLocations, tcnData: self.prepareTCNData())
 
-        FlaatAPI.uploadReport(report) { (result) in
+        FlaatAPI.default.uploadReport(report) { (result) in
             let completionError: Error?
             switch result {
             case .failure(let error):
