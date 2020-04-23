@@ -1,20 +1,14 @@
 import UIKit
 import FlaatSDK
-import TCNClient
-import Security
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var bluetoothService: TCNBluetoothService!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
         FlaatService.launch(apiKey: "ce8ffe25cdbd3c22da9273ac0eb35d66", logLevel: .debug)
-        runBluetoothService()
-
-        testCrypto()
 
         return true
     }
@@ -39,34 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    }
-
-    var tck: TemporaryContactKey = ReportAuthorizationKey().initialTemporaryContactKey
-
-    private func runBluetoothService() {
-        bluetoothService = TCNBluetoothService(tcnGenerator: { () -> Data in
-            let deviceName = UIDevice.current.name
-            let deviceNameHash = CryptoProvider.sha256(data: deviceName.data(using: .utf8)!)
-
-            //let tcn = self.tck.temporaryContactNumber.bytes
-            let tcn = deviceNameHash[0..<16]
-
-            NSLog("Bluetooth service asked for TCN. Returning \(tcn.base64EncodedString()). Composed from device name '\(deviceName)' and corresponding hash \(deviceNameHash.base64EncodedString())")
-            return tcn
-        }, tcnFinder: { (data, distance) in
-            NSLog("Data is here: \(data). Distance: \(distance ?? 0)")
-        }, errorHandler: { (error) in
-            NSLog("Bluetooth service error: \(error)")
-        })
-
-        bluetoothService.start()
-    }
-
-    private func testCrypto() {
-//        let key = SecKeyCreateRandomKey(<#T##parameters: CFDictionary##CFDictionary#>, <#T##error: UnsafeMutablePointer<Unmanaged<CFError>?>?##UnsafeMutablePointer<Unmanaged<CFError>?>?#>)
-
-        
-
     }
 
 }

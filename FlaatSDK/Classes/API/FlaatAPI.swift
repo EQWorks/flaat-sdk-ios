@@ -119,6 +119,7 @@ internal class FlaatAPI {
                 return
             }
 
+            Log.info("Successfully logged in to the API and received access token")
             self.accessToken = token
             completion(nil)
         }
