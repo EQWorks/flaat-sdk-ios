@@ -29,6 +29,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LSi-xb-VEZ">
                                 <rect key="frame" x="16" y="58" width="102" height="30"/>
                                 <state key="normal" title="Check Reports"/>
+                                <connections>
+                                    <action selector="checkReportsAction:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="HZH-x4-MS4"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

@@ -24,5 +24,18 @@ class MainViewController: UIViewController {
             }
         }
     }
+
+    @IBAction func checkReportsAction(_ sender: UIButton) {
+        FlaatService.downloadAndAnalyzeReports { (infected) -> Void in
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "Check Completed",
+                    message: infected ? "You contacted someone with COVID-19" : "No contacts with COVID-19 found", preferredStyle: .alert)
+
+                alert.addAction(UIAlertAction(title: "Close", style: .default, handler: nil))
+
+                self.present(alert, animated: true)
+            }
+        }
+    }
 }
 

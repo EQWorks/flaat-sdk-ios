@@ -17,4 +17,8 @@ public class FlaatService {
         reportUploader.uploadReport(days: days, tcnReport: tcnReport, validationPin: validationPin, completion: completion)
     }
 
+    public class func downloadAndAnalyzeReports(completion: @escaping (_ infected: Bool) -> Void) {
+        let reportAnalyzer = ReportAnalyzer()
+        reportAnalyzer.downloadAndAnalyzeReports(completion: completion)
+    }
 }
