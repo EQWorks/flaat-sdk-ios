@@ -15,4 +15,16 @@ class PersistentStorage {
         }
     }
 
+    class func appendValue<T>(_ value: T, toArrayForKey key: String) where T: Equatable {
+        var existingArray: [T]! = UserDefaults.standard.array(forKey: key) as? [T]
+        if existingArray == nil {
+            existingArray = [T]()
+        }
+
+        if !existingArray.contains(where: { $0 == value }) {
+            existingArray.append(value)
+            UserDefaults.standard.set(existingArray, forKey: key)
+        }
+    }
+
 }

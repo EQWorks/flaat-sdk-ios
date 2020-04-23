@@ -28,10 +28,11 @@ internal class BluetoothMonitor {
 
         bluetoothService = TCNBluetoothService(tcnGenerator: { () -> Data in
             let tcn = self.tcn.bytes
-            NSLog("Bluetooth service asked for TCN. Returning \(tcn.base64EncodedString()).")
+            Log.info("Someone over Bluetooth asked for TCN. Returning \(tcn.base64EncodedString()).")
             return tcn
-        }, tcnFinder: { (data, distance) in
-            NSLog("Data is here: \(data). Distance: \(distance ?? 0)")
+        }, tcnFinder: { (tcn, distance) in
+            NSLog("Discovered new TCN: \(tcn.base64EncodedData()). Distance: \(distance ?? 0). Saving it to contacts DB...")
+            PersistentStorage.appendValue(tcn, toArrayForKey: "encounteredTCNs")
         }, errorHandler: { (error) in
             NSLog("Bluetooth service error: \(error)")
         })
