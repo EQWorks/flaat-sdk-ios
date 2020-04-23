@@ -11,7 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
-        FlaatService.launch(apiKey: "8b2156246175b06cdda68cfb2e3a86aa")
+        FlaatService.launch(apiKey: "ce8ffe25cdbd3c22da9273ac0eb35d66", logLevel: .debug)
         runBluetoothService()
 
         testCrypto()

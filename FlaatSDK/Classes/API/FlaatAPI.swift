@@ -28,6 +28,7 @@ internal class FlaatAPI {
         var request = URLRequest(url: requestURL)
         request.httpMethod = method
 
+
         if method == "GET" {
             // TODO: set parameters for GET request
             
@@ -37,6 +38,7 @@ internal class FlaatAPI {
                 return
             }
             request.httpBody = serializedJson
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
             Log.debug("Request body: \(String(data: serializedJson, encoding: .utf8)!)")
         }
@@ -105,7 +107,7 @@ internal class FlaatAPI {
             "access_key": apiKey]
 
         prepareAndRunRequest(url: APIEndpoints.dev.login, method: "POST", params: loginParams, requireAuth: false) { (data, response, error) in
-            guard error != nil else {
+            guard error == nil else {
                 completion(error)
                 return
             }

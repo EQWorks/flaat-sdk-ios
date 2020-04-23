@@ -10,7 +10,7 @@ struct TCNReport {
         return [
             "validationPin": validationPin,
             "traces": traces.map { $0.json() },
-            "tcnData": tcnData.base64EncodedString()
+            "report": tcnData.base64EncodedString()
         ]
     }
 }

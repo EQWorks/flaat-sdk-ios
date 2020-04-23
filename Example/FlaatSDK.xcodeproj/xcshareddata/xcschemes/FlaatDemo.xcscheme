@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-               BuildableName = "FlaatSDK_Example.app"
-               BlueprintName = "FlaatSDK_Example"
+               BuildableName = "FlaatDemo.app"
+               BlueprintName = "FlaatDemo"
                ReferencedContainer = "container:FlaatSDK.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "FlaatSDK_Example.app"
-            BlueprintName = "FlaatSDK_Example"
+            BuildableName = "FlaatDemo.app"
+            BlueprintName = "FlaatDemo"
             ReferencedContainer = "container:FlaatSDK.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -78,8 +78,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "FlaatSDK_Example.app"
-            BlueprintName = "FlaatSDK_Example"
+            BuildableName = "FlaatDemo.app"
+            BlueprintName = "FlaatDemo"
             ReferencedContainer = "container:FlaatSDK.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -95,8 +95,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "607FACCF1AFB9204008FA782"
-            BuildableName = "FlaatSDK_Example.app"
-            BlueprintName = "FlaatSDK_Example"
+            BuildableName = "FlaatDemo.app"
+            BlueprintName = "FlaatDemo"
             ReferencedContainer = "container:FlaatSDK.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

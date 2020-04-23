@@ -64,7 +64,7 @@ internal class ReportUploader: NSObject {
 
     private func prepareTCNData() -> Data {
         // TBD
-        return Data()
+        return UUID().uuidString.data(using: .utf8)!
     }
 }
 
