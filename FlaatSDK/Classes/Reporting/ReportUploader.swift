@@ -1,10 +1,11 @@
 import Foundation
+import TCNClient
 
 internal class ReportUploader: NSObject {
 
     private let geoHashPrecision = 6
 
-    func uploadReport(days: Int = 21, validationPin: String, completion: @escaping (Error?) -> Void) {
+    func uploadReport(days: Int = 21, tcnReport: TCNClient.Report, validationPin: String, completion: @escaping (Error?) -> Void) {
         Log.info("Uploading report...")
 
         let locationReader = PrivateKitLocationReader()
@@ -14,7 +15,7 @@ internal class ReportUploader: NSObject {
 
         Log.debug("Locations in report:\n\(reportedLocations)")
 
-        let report = TCNReport(validationPin: validationPin, traces: reportedLocations, tcnData: self.prepareTCNData())
+        let report = TCNReport(validationPin: validationPin, traces: reportedLocations, tcnData: try! tcnReport.serializedData())
 
         FlaatAPI.default.uploadReport(report) { (result) in
             let completionError: Error?
@@ -62,10 +63,6 @@ internal class ReportUploader: NSObject {
         return reportedLocations
     }
 
-    private func prepareTCNData() -> Data {
-        // TBD
-        return UUID().uuidString.data(using: .utf8)!
-    }
 }
 
 extension GeoLocationRecord {
