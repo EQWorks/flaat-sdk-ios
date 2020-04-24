@@ -31,10 +31,10 @@ internal class BluetoothMonitor {
             Log.info("Someone over Bluetooth asked for TCN. Returning \(tcn.base64EncodedString()).")
             return tcn
         }, tcnFinder: { (tcn, distance) in
-            NSLog("Discovered new TCN: \(tcn.base64EncodedData()). Distance: \(distance ?? 0). Saving it to contacts DB...")
+            Log.debug("Discovered new TCN: \(tcn.base64EncodedString()). Distance: \(distance ?? 0). Saving it to contacts DB...")
             PersistentStorage.appendValue(tcn, toArrayForKey: "encounteredTCNs")
         }, errorHandler: { (error) in
-            NSLog("Bluetooth service error: \(error)")
+            Log.error("Bluetooth service error: \(error)")
         })
 
         bluetoothService.start()
