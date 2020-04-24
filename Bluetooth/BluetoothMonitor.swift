@@ -4,11 +4,11 @@ import TCNClient
 internal class BluetoothMonitor {
 
     private var bluetoothService: TCNBluetoothService!
+
+    private let keyPair: PublicPrivateKeyPair
+    private let rak: ReportAuthorizationKey
+
     private var tck: TemporaryContactKey
-
-    private var keyPair: PublicPrivateKeyPair
-    private var rak: ReportAuthorizationKey
-
     private var tcn: TemporaryContactNumber
 
     init() {
@@ -58,7 +58,7 @@ internal class BluetoothMonitor {
 
     func generateReport() -> TCNClient.Report {
         let reportVerificationPublicKeyBytes = keyPair.publicKey
-        let temporaryContactKeyBytes = tck.bytes
+        let temporaryContactKeyBytes = rak.initialTemporaryContactKey.bytes
         let startIndex = UInt16(1)
         let endIndex = tck.index
         let memoType = MemoType.CovidWatchV1

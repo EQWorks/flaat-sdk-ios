@@ -21,7 +21,7 @@ internal class ReportAnalyzer {
     private func analyzeReports(_ serializedReports: [Data]) -> Bool {
         let encounteredTCNs = Set(PersistentStorage.getValue(forKey: "encounteredTCNs") as? [Data] ?? [])
 
-        for reportData in serializedReports {
+        for reportData in serializedReports.reversed() {
             guard let report = try? TCNClient.Report(serializedData: reportData) else {
                 Log.error("Cannot deserialize report \(reportData.base64EncodedString())")
                 continue
