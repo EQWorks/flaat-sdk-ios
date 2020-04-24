@@ -45,7 +45,7 @@ internal class BluetoothMonitor {
     }
 
     func startTCNUpdating() {
-        Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { (timer) in
+        Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { (timer) in
             self.tck = self.tck.ratchet()!
             self.tcn = self.tck.temporaryContactNumber
 
@@ -58,7 +58,7 @@ internal class BluetoothMonitor {
 
     func generateReport() -> TCNClient.Report {
         let reportVerificationPublicKeyBytes = keyPair.publicKey
-        let temporaryContactKeyBytes = rak.initialTemporaryContactKey.bytes
+        let temporaryContactKeyBytes = rak.tck_0.bytes
         let startIndex = UInt16(1)
         let endIndex = tck.index
         let memoType = MemoType.CovidWatchV1
