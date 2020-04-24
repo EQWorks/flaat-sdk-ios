@@ -3,7 +3,7 @@ import FlaatSDK
 
 class MainViewController: UIViewController {
 
-
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,26 +16,42 @@ class MainViewController: UIViewController {
     }
 
     @IBAction func sendReportAction(_ sender: UIButton) {
-        FlaatService.uploadReport(validationPin: "test-pin") { (error) in
-            if let error = error {
-                NSLog("Could not upload report: \(error)")
+        activityIndicator.startAnimating()
+        sender.isEnabled = false
 
-                self.showSimpleAlert(title: "Error",
-                    message: "Failed to upload report",
-                    buttonTitle: "Close")
-            } else {
-                NSLog("Report upload succeeded")
+        FlaatService.uploadReport(validationPin: "test-pin") { [weak self] (error) in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                sender.isEnabled = true
+                self.activityIndicator.stopAnimating()
 
-                self.showSimpleAlert(title: "Report Upload",
-                    message: "Successfully uploaded report",
-                    buttonTitle: "Close")
+                if let error = error {
+                    NSLog("Could not upload report: \(error)")
+
+                    self.showSimpleAlert(title: "Error",
+                        message: "Failed to upload report",
+                        buttonTitle: "Close")
+                } else {
+                    NSLog("Report upload succeeded")
+
+                    self.showSimpleAlert(title: "Report Upload",
+                        message: "Successfully uploaded report",
+                        buttonTitle: "Close")
+                }
             }
         }
     }
 
     @IBAction func checkReportsAction(_ sender: UIButton) {
-        FlaatService.downloadAndAnalyzeReports { (infected) -> Void in
+        activityIndicator.startAnimating()
+        sender.isEnabled = false
+
+        FlaatService.downloadAndAnalyzeReports { [weak self] (infected) -> Void in
             DispatchQueue.main.async {
+                guard let self = self else { return }
+                sender.isEnabled = true
+                self.activityIndicator.stopAnimating()
+
                 self.showSimpleAlert(title: "Check Completed",
                     message: infected ? "You contacted someone with COVID-19" : "No contacts with COVID-19 found",
                     buttonTitle: "Close")
