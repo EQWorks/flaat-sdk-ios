@@ -1,6 +1,6 @@
 use_frameworks!
 
-target 'FlaatSDK_Example' do
+target 'FlaatDemo' do
   pod 'FlaatSDK', :path => '../'
 #   pod 'TCNClient', :git => 'https://github.com/EQWorks/tcn-client-ios.git', :branch => 'master'
   pod 'TCNClient', :path => '../../forks/tcn-client-ios'

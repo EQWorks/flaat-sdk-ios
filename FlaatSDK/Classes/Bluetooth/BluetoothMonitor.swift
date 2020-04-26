@@ -5,7 +5,7 @@ internal class BluetoothMonitor {
 
     private var bluetoothService: TCNBluetoothService!
 
-    private let keyPair: PublicPrivateKeyPair
+    private let keyPair: AsymmetricKeyPair
     private let rak: ReportAuthorizationKey
 
     private var tck: TemporaryContactKey
@@ -91,12 +91,12 @@ internal class BluetoothMonitor {
         return ReportAuthorizationKey(keyPair: getKeyPair())
     }
 
-    static func getKeyPair() -> PublicPrivateKeyPair {
+    static func getKeyPair() -> AsymmetricKeyPair {
         if let privateKey = PersistentStorage.getValue(forKey: "privateKey") as? Data,
             let publicKey = PersistentStorage.getValue(forKey: "publicKey") as? Data {
             return SavedKeyPair(privateKey: privateKey, publicKey: publicKey)
         } else {
-            let keyPair = CryptoProvider.generateKeyPair()
+            let keyPair = CryptoLib.generateKeyPair()
             PersistentStorage.setValue(keyPair.privateKey, forKey: "privateKey")
             PersistentStorage.setValue(keyPair.publicKey, forKey: "publicKey")
 
@@ -106,7 +106,7 @@ internal class BluetoothMonitor {
 
 }
 
-public struct SavedKeyPair: PublicPrivateKeyPair {
+public struct SavedKeyPair: AsymmetricKeyPair {
 
     public let privateKey: Data
     public let publicKey: Data

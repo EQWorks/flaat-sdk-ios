@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		233E253AF23A13A0740E8218 /* Pods_FlaatDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD537903C49EA592F92226D /* Pods_FlaatDemo.framework */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* MainViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
@@ -14,7 +15,6 @@
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		8B477B2299B34FFCA62FE628 /* Pods_FlaatSDK_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09CD9FA7EE7DB128E229FA99 /* Pods_FlaatSDK_Tests.framework */; };
-		DB8A60FD554904ED407E0E8C /* Pods_FlaatSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867AA404D7C9B4B9C8653A5 /* Pods_FlaatSDK_Example.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,7 +28,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0867AA404D7C9B4B9C8653A5 /* Pods_FlaatSDK_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlaatSDK_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		09CD9FA7EE7DB128E229FA99 /* Pods_FlaatSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlaatSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A176C8CFAB7B457CB8F4DE0 /* Pods-FlaatSDK_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlaatSDK_Tests.debug.xcconfig"; path = "Target Support Files/Pods-FlaatSDK_Tests/Pods-FlaatSDK_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		2E20EA9337F182EA6B4954B8 /* FlaatSDK.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FlaatSDK.podspec; path = ../FlaatSDK.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -42,11 +41,14 @@
 		607FACE51AFB9204008FA782 /* FlaatSDK_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlaatSDK_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
+		659A4D204639EED10B529E1C /* Pods-FlaatDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlaatDemo.debug.xcconfig"; path = "Target Support Files/Pods-FlaatDemo/Pods-FlaatDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		79BFFE556EB89DE59348324F /* Pods-FlaatDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlaatDemo.release.xcconfig"; path = "Target Support Files/Pods-FlaatDemo/Pods-FlaatDemo.release.xcconfig"; sourceTree = "<group>"; };
 		8063C9044134897106EC2EAC /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		B9A3A050F10A79B7710BC001 /* Pods-FlaatSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlaatSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-FlaatSDK_Tests/Pods-FlaatSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		C0AF6EFFF7223E257179BD8E /* Pods-FlaatSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlaatSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-FlaatSDK_Example/Pods-FlaatSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		E08442F1C85980023AA04521 /* Pods-FlaatSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlaatSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-FlaatSDK_Example/Pods-FlaatSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		EBE323D52EDFE2027C5A40FC /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		FAD537903C49EA592F92226D /* Pods_FlaatDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlaatDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,7 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB8A60FD554904ED407E0E8C /* Pods_FlaatSDK_Example.framework in Frameworks */,
+				233E253AF23A13A0740E8218 /* Pods_FlaatDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,6 +78,8 @@
 				E08442F1C85980023AA04521 /* Pods-FlaatSDK_Example.release.xcconfig */,
 				1A176C8CFAB7B457CB8F4DE0 /* Pods-FlaatSDK_Tests.debug.xcconfig */,
 				B9A3A050F10A79B7710BC001 /* Pods-FlaatSDK_Tests.release.xcconfig */,
+				659A4D204639EED10B529E1C /* Pods-FlaatDemo.debug.xcconfig */,
+				79BFFE556EB89DE59348324F /* Pods-FlaatDemo.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -153,8 +157,8 @@
 		9127DBEF650C51EC623E2494 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0867AA404D7C9B4B9C8653A5 /* Pods_FlaatSDK_Example.framework */,
 				09CD9FA7EE7DB128E229FA99 /* Pods_FlaatSDK_Tests.framework */,
+				FAD537903C49EA592F92226D /* Pods_FlaatDemo.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -280,7 +284,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FlaatSDK_Example-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-FlaatDemo-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -293,18 +297,22 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlaatSDK_Example/Pods-FlaatSDK_Example-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-FlaatDemo/Pods-FlaatDemo-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/FlaatSDK/FlaatSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/TCNClient/TCNClient.framework",
+				"${BUILT_PRODUCTS_DIR}/ed25519swift/ed25519swift.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FlaatSDK.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TCNClient.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ed25519swift.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlaatSDK_Example/Pods-FlaatSDK_Example-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlaatDemo/Pods-FlaatDemo-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		DB062857639F2D29084C329F /* [CP] Check Pods Manifest.lock */ = {
@@ -500,7 +508,7 @@
 		};
 		607FACF01AFB9204008FA782 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C0AF6EFFF7223E257179BD8E /* Pods-FlaatSDK_Example.debug.xcconfig */;
+			baseConfigurationReference = 659A4D204639EED10B529E1C /* Pods-FlaatDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = V9FBFWW4G2;
@@ -517,7 +525,7 @@
 		};
 		607FACF11AFB9204008FA782 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E08442F1C85980023AA04521 /* Pods-FlaatSDK_Example.release.xcconfig */;
+			baseConfigurationReference = 79BFFE556EB89DE59348324F /* Pods-FlaatDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = V9FBFWW4G2;

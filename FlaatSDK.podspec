@@ -10,12 +10,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '12.0'
   s.swift_versions = ['5.1', '5.2']
   s.source_files = 'FlaatSDK/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'FlaatSDK' => ['FlaatSDK/Assets/*.png']
-  # }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.pod_target_xcconfig = { 'OTHER_LDFLAGS' => '$(inherited) -framework "TCNClient"', 'FRAMEWORK_SEARCH_PATHS' => "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/TCNClient" }
+
 end

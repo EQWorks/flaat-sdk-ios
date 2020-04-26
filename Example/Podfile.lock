@@ -1,8 +1,12 @@
 PODS:
+  - CryptoSwift (1.3.1)
+  - ed25519swift (1.2.5):
+    - CryptoSwift
   - FlaatSDK (0.1.0)
   - Nimble (7.3.4)
   - Quick (1.2.0)
-  - TCNClient (0.1.0)
+  - TCNClient (0.1.0):
+    - ed25519swift
 
 DEPENDENCIES:
   - FlaatSDK (from `../`)
@@ -12,6 +16,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - CryptoSwift
+    - ed25519swift
     - Nimble
     - Quick
 
@@ -22,11 +28,13 @@ EXTERNAL SOURCES:
     :path: "../../forks/tcn-client-ios"
 
 SPEC CHECKSUMS:
-  FlaatSDK: d079f2caa3271966c0a81e65ec7cf20771695999
+  CryptoSwift: f12f037f6d0fcd6d48c96db0071b653de64e6c4d
+  ed25519swift: 1dde95cca5e1f375656e2fbccb06f9c568ef6498
+  FlaatSDK: 145fc0added525dfa8cb430159f2d05bff11bc5e
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
-  TCNClient: e37dd8b10b672b9a882d16b430f32333934fe9d4
+  TCNClient: feb090d27c0dcbf86ab91d4039806312a979aea0
 
-PODFILE CHECKSUM: b80c53eddff6f9598601b4667cc5b7165d0a261a
+PODFILE CHECKSUM: 4e92156f35f312249f2f3b8d53a85cf5f5f4e23f
 
 COCOAPODS: 1.9.0

@@ -8,7 +8,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
-        FlaatService.launch(apiKey: "94adfb61120ec116f612d1fdc1966e24", logLevel: .debug)
+        FlaatService.launch(apiKey: "0b0804e3d5a0018fb44487c929481612", logLevel: .debug)
 
         return true
     }
