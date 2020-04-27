@@ -5,7 +5,7 @@ internal class ReportUploader: NSObject {
 
     private let geoHashPrecision = 6
 
-    func uploadReport(days: Int = 21, tcnReport: TCNClient.Report, validationPin: String, completion: @escaping (Error?) -> Void) {
+    func uploadReport(days: Int = 21, tcnReport: TCNClient.SignedReport, validationPin: String, completion: @escaping (Error?) -> Void) {
         Log.info("Uploading report...")
 
         let locationReader = PrivateKitLocationReader()

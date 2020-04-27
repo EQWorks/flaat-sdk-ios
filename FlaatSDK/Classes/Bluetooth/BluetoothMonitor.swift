@@ -5,20 +5,17 @@ internal class BluetoothMonitor {
 
     private var bluetoothService: TCNBluetoothService!
 
-    private let keyPair: AsymmetricKeyPair
     private let rak: ReportAuthorizationKey
 
     private var tck: TemporaryContactKey
     private var tcn: TemporaryContactNumber
 
     init() {
-        self.keyPair = BluetoothMonitor.getKeyPair()
         let rak = BluetoothMonitor.getRAK()
         self.rak = rak
         let tck = BluetoothMonitor.getSavedTCK() ?? BluetoothMonitor.getInitialTCK(rak: rak)
         self.tck = tck
         self.tcn = tck.temporaryContactNumber
-
     }
 
     func runMonitoring() {
@@ -30,8 +27,11 @@ internal class BluetoothMonitor {
             let tcn = self.tcn.bytes
             Log.info("Someone over Bluetooth asked for TCN. Returning \(tcn.base64EncodedString()).")
             return tcn
-        }, tcnFinder: { (tcn, distance) in
-            Log.debug("Discovered new TCN: \(tcn.base64EncodedString()). Distance: \(distance ?? 0). Saving it to contacts DB...")
+//        }, tcnFinder: { (tcn, distance) in
+//            Log.debug("Discovered new TCN: \(tcn.base64EncodedString()). Distance: \(distance ?? 0). Saving it to contacts DB...")
+//            PersistentStorage.appendValue(tcn, toArrayForKey: "encounteredTCNs")
+        }, tcnFinder: { (tcn) in
+            Log.debug("Discovered new TCN: \(tcn.base64EncodedString()). Saving it to contacts DB...")
             PersistentStorage.appendValue(tcn, toArrayForKey: "encounteredTCNs")
         }, errorHandler: { (error) in
             Log.error("Bluetooth service error: \(error)")
@@ -56,15 +56,13 @@ internal class BluetoothMonitor {
         }
     }
 
-    func generateReport() -> TCNClient.Report {
-        let reportVerificationPublicKeyBytes = keyPair.publicKey
-        let temporaryContactKeyBytes = rak.tck_0.bytes
+    func generateReport() throws -> TCNClient.SignedReport {
         let startIndex = UInt16(1)
         let endIndex = tck.index
         let memoType = MemoType.CovidWatchV1
         let memoData = Data([1])
 
-        return Report(reportVerificationPublicKeyBytes: reportVerificationPublicKeyBytes, temporaryContactKeyBytes: temporaryContactKeyBytes, startIndex: startIndex, endIndex: endIndex, memoType: memoType, memoData: memoData)
+        return try rak.createSignedReport(memoType: memoType, memoData: memoData, startIndex: startIndex, endIndex: endIndex)
     }
 
     static func getInitialTCK(rak: ReportAuthorizationKey) -> TemporaryContactKey {
@@ -88,19 +86,14 @@ internal class BluetoothMonitor {
     }
 
     static func getRAK() -> ReportAuthorizationKey {
-        return ReportAuthorizationKey(keyPair: getKeyPair())
-    }
-
-    static func getKeyPair() -> AsymmetricKeyPair {
         if let privateKey = PersistentStorage.getValue(forKey: "privateKey") as? Data,
-            let publicKey = PersistentStorage.getValue(forKey: "publicKey") as? Data {
-            return SavedKeyPair(privateKey: privateKey, publicKey: publicKey)
+           let rak = try? ReportAuthorizationKey(serializedData: privateKey) {
+            return rak
         } else {
-            let keyPair = CryptoLib.generateKeyPair()
-            PersistentStorage.setValue(keyPair.privateKey, forKey: "privateKey")
-            PersistentStorage.setValue(keyPair.publicKey, forKey: "publicKey")
-
-            return keyPair
+            let rak = ReportAuthorizationKey()
+            PersistentStorage.setValue(rak.serializedData(), forKey: "privateKey")
+            PersistentStorage.setValue(rak.initialTemporaryContactKey.reportVerificationPublicKeyBytes, forKey: "publicKey")
+            return rak
         }
     }
 

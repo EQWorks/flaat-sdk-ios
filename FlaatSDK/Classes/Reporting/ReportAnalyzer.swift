@@ -22,12 +22,12 @@ internal class ReportAnalyzer {
         let encounteredTCNs = Set(PersistentStorage.getValue(forKey: "encounteredTCNs") as? [Data] ?? [])
 
         for reportData in serializedReports.reversed() {
-            guard let report = try? TCNClient.Report(serializedData: reportData) else {
+            guard let report = try? TCNClient.SignedReport(serializedData: reportData) else {
                 Log.error("Cannot deserialize report \(reportData.base64EncodedString())")
                 continue
             }
 
-            let reportTCNs = Set(report.getTemporaryContactNumbers().map { $0.bytes } )
+            let reportTCNs = Set(report.report.getTemporaryContactNumbers().map { $0.bytes } )
             let intersectedTCNs = reportTCNs.intersection(encounteredTCNs)
             if !intersectedTCNs.isEmpty {
                 Log.info("Discovered intersecting TCNs! List: \(intersectedTCNs.map {$0.base64EncodedString()} )")

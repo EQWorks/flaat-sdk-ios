@@ -6,13 +6,13 @@ PODS:
   - Nimble (7.3.4)
   - Quick (1.2.0)
   - TCNClient (0.1.0):
-    - ed25519swift
+    - ed25519swift (~> 1.2.5)
 
 DEPENDENCIES:
   - FlaatSDK (from `../`)
   - Nimble (~> 7.0)
   - Quick (~> 1.2.0)
-  - TCNClient (from `../../forks/tcn-client-ios`)
+  - TCNClient (from `https://github.com/EQWorks/tcn-client-ios.git`, branch `ios-12-support`)
 
 SPEC REPOS:
   trunk:
@@ -25,7 +25,13 @@ EXTERNAL SOURCES:
   FlaatSDK:
     :path: "../"
   TCNClient:
-    :path: "../../forks/tcn-client-ios"
+    :branch: ios-12-support
+    :git: https://github.com/EQWorks/tcn-client-ios.git
+
+CHECKOUT OPTIONS:
+  TCNClient:
+    :commit: f8e4b961bbaba347c1c07cafd15e5bb8c044d311
+    :git: https://github.com/EQWorks/tcn-client-ios.git
 
 SPEC CHECKSUMS:
   CryptoSwift: f12f037f6d0fcd6d48c96db0071b653de64e6c4d
@@ -33,8 +39,8 @@ SPEC CHECKSUMS:
   FlaatSDK: 145fc0added525dfa8cb430159f2d05bff11bc5e
   Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
   Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
-  TCNClient: feb090d27c0dcbf86ab91d4039806312a979aea0
+  TCNClient: cb7d289f5957743f1bd0b4ee1800e44735853ec0
 
-PODFILE CHECKSUM: 4e92156f35f312249f2f3b8d53a85cf5f5f4e23f
+PODFILE CHECKSUM: a1845f1aa07aaedf8273ad34cd2e5a7e7373d419
 
 COCOAPODS: 1.9.0

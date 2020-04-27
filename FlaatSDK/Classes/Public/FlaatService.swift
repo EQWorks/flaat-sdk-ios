@@ -13,8 +13,13 @@ public class FlaatService {
 
     public class func uploadReport(days: Int = 21, validationPin: String, completion: @escaping (Error?) -> Void) {
         let reportUploader = ReportUploader()
-        let tcnReport = bluetoothMonitor.generateReport()
-        reportUploader.uploadReport(days: days, tcnReport: tcnReport, validationPin: validationPin, completion: completion)
+        do {
+            let tcnReport = try bluetoothMonitor.generateReport()
+            reportUploader.uploadReport(days: days, tcnReport: tcnReport, validationPin: validationPin, completion: completion)
+        } catch {
+            completion(error)
+            return
+        }
     }
 
     public class func downloadAndAnalyzeReports(completion: @escaping (_ infected: Bool) -> Void) {
