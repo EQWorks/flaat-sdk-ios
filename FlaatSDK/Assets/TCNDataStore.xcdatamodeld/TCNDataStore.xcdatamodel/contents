@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19D76" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="IncomingTCNReport" representedClassName="IncomingTCNReportImpl" syncable="YES" codeGenerationType="class">
+        <attribute name="dateReceived" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="processed" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="reportData" attributeType="Binary"/>
+    </entity>
+    <entity name="OutgoingTCNReport" representedClassName="OutgoingTCNReportImpl" syncable="YES" codeGenerationType="class">
+        <attribute name="dateCreated" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dateSubmitted" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="reportData" attributeType="Binary"/>
+    </entity>
+    <entity name="TCNEncounter" representedClassName="TCNEncounterImpl" syncable="YES" codeGenerationType="class">
+        <attribute name="closestRSSI" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="firstTime" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastTime" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="tcnBytes" attributeType="Binary"/>
+        <relationship name="linkedReport" optional="YES" maxCount="1" deletionRule="Deny" destinationEntity="IncomingTCNReport"/>
+    </entity>
+    <elements>
+        <element name="IncomingTCNReport" positionX="-63" positionY="-18" width="128" height="88"/>
+        <element name="TCNEncounter" positionX="-54" positionY="18" width="128" height="118"/>
+        <element name="OutgoingTCNReport" positionX="-36" positionY="27" width="128" height="88"/>
+    </elements>
+</model>
