@@ -3,15 +3,16 @@ import TCNClient
 
 protocol TCNEncounter {
 
-    var tcnData: Data { get }
+    var tcn: TemporaryContactNumber { get }
     var firstTime: Date { get }
     var lastTime: Date { get }
     var closestRSSI: Double { get }
+    var linkedReport: IncomingTCNReport? { get }
 }
 
 protocol IncomingTCNReport {
 
-    var signedReport: TCNClient.SignedReport { get }
+    var tcnReport: TCNClient.Report { get }
     var dateReceived: Date { get }
     var processed: Bool { get }
 }
@@ -25,7 +26,7 @@ protocol OutgoingTCNReport {
 
 protocol TCNDataStore {
 
-    func saveEncounteredTCN(_ encounter: TCNEncounter) throws
+    func saveEncounteredTCN(_ tcn: TemporaryContactNumber, timestamp: Date, rssi: Double) throws
     func loadTCNEncounters(fromDate: Date?) throws -> [TCNEncounter]
     func cleanupOldEncounters(untilDate: Date) throws
 
