@@ -37,5 +37,5 @@ protocol TCNDataStore {
     func fetchIncomingReports(onlyUnprocessed: Bool) throws -> [IncomingTCNReport]
     func deleteIncomingReports(_ reports: [IncomingTCNReport]) throws
 
-    func linkEncounter(_ encounter: TCNEncounter, toReport report: IncomingTCNReport) throws
+    func linkEncounters(_ encounters: [TCNEncounter], toReport report: IncomingTCNReport) throws
 }
