@@ -36,7 +36,7 @@ class BluetoothMonitor {
             PersistentStorage.appendValue(tcn, toArrayForKey: "encounteredTCNs")
 
             do {
-                try self.dataStore.saveEncounteredTCN(TemporaryContactNumber(bytes: tcn), timestamp: Date(), rssi: distance ?? 0)
+                try self.dataStore.saveEncounteredTCN(TemporaryContactNumber(bytes: tcn), timestamp: Date(), distance: distance ?? 0)
             } catch {
                 Log.error("Cannot save TCN \(tcn.base64EncodedString())")
                 fatalError("Cannot save encountered TCN")

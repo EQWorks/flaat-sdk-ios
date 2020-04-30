@@ -6,7 +6,7 @@ protocol TCNEncounter {
     var tcn: TemporaryContactNumber { get }
     var firstTime: Date { get }
     var lastTime: Date { get }
-    var closestRSSI: Double { get }
+    var closestDistance: Double { get }
     var linkedReport: IncomingTCNReport? { get }
 }
 
@@ -26,7 +26,7 @@ protocol OutgoingTCNReport {
 
 protocol TCNDataStore {
 
-    func saveEncounteredTCN(_ tcn: TemporaryContactNumber, timestamp: Date, rssi: Double) throws
+    func saveEncounteredTCN(_ tcn: TemporaryContactNumber, timestamp: Date, distance: Double) throws
     func loadTCNEncounters(fromDate: Date?) throws -> [TCNEncounter]
     func cleanupOldEncounters(untilDate: Date) throws
 

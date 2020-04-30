@@ -12,15 +12,15 @@
         <attribute name="reportData" attributeType="Binary"/>
     </entity>
     <entity name="TCNEncounter" representedClassName="FlaatSDK.TCNEncounterImpl" syncable="YES">
-        <attribute name="closestRSSI" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="closestDistance" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="firstTime" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastTime" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="tcnBytes" attributeType="Binary"/>
+        <attribute name="tcnBase64" attributeType="String"/>
         <relationship name="linkedReportImpl" optional="YES" maxCount="1" deletionRule="Deny" destinationEntity="IncomingTCNReport" inverseName="tcnEncounters" inverseEntity="IncomingTCNReport"/>
     </entity>
     <elements>
         <element name="IncomingTCNReport" positionX="-229.2734375" positionY="-184.9453125" width="128" height="103"/>
-        <element name="TCNEncounter" positionX="-15.6484375" positionY="-199.6328125" width="128" height="118"/>
         <element name="OutgoingTCNReport" positionX="-224.67578125" positionY="-37.3046875" width="128" height="88"/>
+        <element name="TCNEncounter" positionX="-15.6484375" positionY="-199.6328125" width="128" height="118"/>
     </elements>
 </model>

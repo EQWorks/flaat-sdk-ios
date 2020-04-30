@@ -25,19 +25,34 @@ class TCNDataStoreCoreData: TCNDataStore {
         }
 
         self.persistentContainer = container
-
     }
 
-    func saveEncounteredTCN(_ tcn: TemporaryContactNumber, timestamp: Date, rssi: Double) throws {
-
-        // TODO: fetch object if it exist and update it
-
+    func saveEncounteredTCN(_ tcn: TemporaryContactNumber, timestamp: Date, distance: Double) throws {
         let managedObjectContext = persistentContainer.viewContext
-        let newTCN = NSEntityDescription.insertNewObject(forEntityName: "TCNEncounter", into: managedObjectContext) as! TCNEncounterImpl
-        newTCN.tcnBytes = tcn.bytes
-        newTCN.firstTime = timestamp
-        newTCN.lastTime = timestamp
-        newTCN.closestRSSI = rssi
+        let tcnBase64 = tcn.bytes.base64EncodedString()
+
+        let fetchRequest = NSFetchRequest<TCNEncounterImpl>(entityName: "TCNEncounter")
+        fetchRequest.predicate = NSPredicate(format: "tcnBase64 == %@", tcnBase64)
+
+        let existingTCN: TCNEncounterImpl?
+        do {
+            let fetchedEncounters = try persistentContainer.viewContext.fetch(fetchRequest)
+            existingTCN = fetchedEncounters.first
+        } catch {
+            Log.error("Failed to fetch TCN encounters with given TCN: \(error)")
+            throw TCNDataError.readFailure
+        }
+
+        if let existingTCN = existingTCN {
+            existingTCN.lastTime = timestamp
+            existingTCN.closestDistance = min(distance, existingTCN.closestDistance)
+        } else {
+            let newTCN = NSEntityDescription.insertNewObject(forEntityName: "TCNEncounter", into: managedObjectContext) as! TCNEncounterImpl
+            newTCN.tcnBase64 = tcn.bytes.base64EncodedString()
+            newTCN.firstTime = timestamp
+            newTCN.lastTime = timestamp
+            newTCN.closestDistance = distance
+        }
 
         do {
             try managedObjectContext.save()

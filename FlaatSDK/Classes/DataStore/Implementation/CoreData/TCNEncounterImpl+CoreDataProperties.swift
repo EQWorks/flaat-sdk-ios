@@ -8,10 +8,10 @@ extension TCNEncounterImpl: TCNEncounter {
         return NSFetchRequest<TCNEncounterImpl>(entityName: "TCNEncounter")
     }
 
-    @NSManaged var tcnBytes: Data
+    @NSManaged var tcnBase64: String
     @NSManaged var firstTime: Date
     @NSManaged var lastTime: Date
-    @NSManaged var closestRSSI: Double
+    @NSManaged var closestDistance: Double
     @NSManaged var linkedReportImpl: IncomingTCNReportImpl?
 
     public var tcn: TemporaryContactNumber {
@@ -20,5 +20,9 @@ extension TCNEncounterImpl: TCNEncounter {
 
     var linkedReport: IncomingTCNReport? {
         return linkedReportImpl
+    }
+
+    var tcnBytes: Data {
+        return Data(base64Encoded: tcnBase64)!
     }
 }
