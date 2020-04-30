@@ -2,12 +2,13 @@ import Foundation
 
 public class FlaatService {
 
-    private static var bluetoothMonitor = BluetoothMonitor()
+    private static var bluetoothMonitor: BluetoothMonitor!
 
-    public class func launch(apiKey: String, logLevel: LogLevel = .info) {
+    public class func launch(apiKey: String, logLevel: LogLevel = .info) throws {
         FlaatAPI.apiKey = apiKey
         Log.logLevel = logLevel
 
+        bluetoothMonitor = try BluetoothMonitor()
         bluetoothMonitor.runMonitoring()
     }
 

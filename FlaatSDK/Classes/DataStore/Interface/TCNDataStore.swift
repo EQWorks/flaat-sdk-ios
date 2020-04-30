@@ -39,3 +39,10 @@ protocol TCNDataStore {
 
     func linkEncounters(_ encounters: [TCNEncounter], toReport report: IncomingTCNReport) throws
 }
+
+enum TCNDataError: Error {
+    case initializationFailure
+    case writeFailure
+    case readFailure
+    case invalidDataFormat
+}

@@ -1,21 +1,24 @@
 import Foundation
 import TCNClient
 
-internal class BluetoothMonitor {
+class BluetoothMonitor {
 
     private var bluetoothService: TCNBluetoothService!
+    private var dataStore: TCNDataStore
 
     private let rak: ReportAuthorizationKey
 
     private var tck: TemporaryContactKey
     private var tcn: TemporaryContactNumber
 
-    init() {
+    init() throws {
         let rak = BluetoothMonitor.getRAK()
         self.rak = rak
         let tck = BluetoothMonitor.getSavedTCK() ?? BluetoothMonitor.getInitialTCK(rak: rak)
         self.tck = tck
         self.tcn = tck.temporaryContactNumber
+
+        self.dataStore = try TCNDataStoreCoreData()
     }
 
     func runMonitoring() {
@@ -27,9 +30,18 @@ internal class BluetoothMonitor {
             let tcn = self.tcn.bytes
             Log.info("Someone over Bluetooth asked for TCN. Returning \(tcn.base64EncodedString()).")
             return tcn
-        }, tcnFinder: { (tcn, distance) in
+        }, tcnFinder: { [weak self] (tcn, distance) in
+            guard let self = self else { return }
             Log.debug("Discovered new TCN: \(tcn.base64EncodedString()). Distance: \(distance ?? 0). Saving it to contacts DB...")
             PersistentStorage.appendValue(tcn, toArrayForKey: "encounteredTCNs")
+
+            do {
+                try self.dataStore.saveEncounteredTCN(TemporaryContactNumber(bytes: tcn), timestamp: Date(), rssi: distance ?? 0)
+            } catch {
+                Log.error("Cannot save TCN \(tcn.base64EncodedString())")
+                fatalError("Cannot save encountered TCN")
+            }
+
 //        }, tcnFinder: { (tcn) in
 //            Log.debug("Discovered new TCN: \(tcn.base64EncodedString()). Saving it to contacts DB...")
 //            PersistentStorage.appendValue(tcn, toArrayForKey: "encounteredTCNs")
@@ -95,23 +107,6 @@ internal class BluetoothMonitor {
             PersistentStorage.setValue(rak.initialTemporaryContactKey.reportVerificationPublicKeyBytes, forKey: "publicKey")
             return rak
         }
-    }
-
-}
-
-public struct SavedKeyPair: AsymmetricKeyPair {
-
-    public let privateKey: Data
-    public let publicKey: Data
-
-    public init(privateKey: Data, publicKey: Data) {
-        self.privateKey = privateKey
-        self.publicKey = publicKey
-    }
-
-    public func signature<D>(for data: D) throws -> Data where D : DataProtocol {
-        // tmp, do nothing
-        return Data()
     }
 
 }

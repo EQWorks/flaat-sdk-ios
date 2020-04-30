@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19D76" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="IncomingTCNReport" representedClassName="FlaatSDK.IncomingTCNReportImpl" syncable="YES" codeGenerationType="class">
+    <entity name="IncomingTCNReport" representedClassName="FlaatSDK.IncomingTCNReportImpl" syncable="YES">
         <attribute name="dateReceived" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="processed" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="reportData" attributeType="Binary"/>
         <relationship name="tcnEncounters" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TCNEncounter" inverseName="linkedReportImpl" inverseEntity="TCNEncounter"/>
     </entity>
-    <entity name="OutgoingTCNReport" representedClassName="FlaatSDK.OutgoingTCNReportImpl" syncable="YES" codeGenerationType="class">
+    <entity name="OutgoingTCNReport" representedClassName="FlaatSDK.OutgoingTCNReportImpl" syncable="YES">
         <attribute name="dateCreated" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dateSubmitted" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="reportData" attributeType="Binary"/>
     </entity>
-    <entity name="TCNEncounter" representedClassName="FlaatSDK.TCNEncounterImpl" syncable="YES" codeGenerationType="class">
+    <entity name="TCNEncounter" representedClassName="FlaatSDK.TCNEncounterImpl" syncable="YES">
         <attribute name="closestRSSI" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="firstTime" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastTime" attributeType="Date" usesScalarValueType="NO"/>
