@@ -1,7 +1,13 @@
 import Foundation
 import TCNClient
 
-internal class ReportAnalyzer {
+class ReportAnalyzer {
+
+    private let dataStore: TCNDataStore
+
+    init(dataStore: TCNDataStore) {
+        self.dataStore = dataStore
+    }
 
     func downloadAndAnalyzeReports(completion: @escaping (_ infected: Bool) -> Void) {
         FlaatAPI.default.downloadReports(locations: []) { (result) in

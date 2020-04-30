@@ -4,21 +4,23 @@ import TCNClient
 class BluetoothMonitor {
 
     private var bluetoothService: TCNBluetoothService!
-    private var dataStore: TCNDataStore
+    private let dataStore: TCNDataStore
+    private let keyStore: KeyStore
 
     private let rak: ReportAuthorizationKey
 
     private var tck: TemporaryContactKey
     private var tcn: TemporaryContactNumber
 
-    init() throws {
+    init(dataStore: TCNDataStore, keyStore: KeyStore) {
         let rak = BluetoothMonitor.getRAK()
         self.rak = rak
         let tck = BluetoothMonitor.getSavedTCK() ?? BluetoothMonitor.getInitialTCK(rak: rak)
         self.tck = tck
         self.tcn = tck.temporaryContactNumber
 
-        self.dataStore = try TCNDataStoreCoreData()
+        self.dataStore = dataStore
+        self.keyStore = keyStore
     }
 
     func runMonitoring() {
@@ -53,10 +55,11 @@ class BluetoothMonitor {
 
         Log.debug("Started Bluetooth monitoring. Initial TCN is: \(tcn.bytes.base64EncodedString())")
 
-        startTCNUpdating()
+        startTCNRotation()
     }
 
-    func startTCNUpdating() {
+    private func startTCNRotation() {
+        // TODO: right now we are doing rotation every 5 seconds for debugging purposes
         Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { (timer) in
             self.tck = self.tck.ratchet()!
             self.tcn = self.tck.temporaryContactNumber

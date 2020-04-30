@@ -1,12 +1,12 @@
 import Foundation
 
-internal typealias DataTaskCompletionHandler = (Data?, URLResponse?, Error?) -> Void
+typealias DataTaskCompletionHandler = (Data?, URLResponse?, Error?) -> Void
 
-internal class FlaatAPI {
+class FlaatAPI {
 
     static let `default` = FlaatAPI()
 
-    internal static var apiKey: String?
+    static var apiKey: String?
 
     private var accessToken: String?
 

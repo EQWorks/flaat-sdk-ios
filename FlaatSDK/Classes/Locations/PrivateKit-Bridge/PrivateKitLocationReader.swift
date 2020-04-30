@@ -1,7 +1,7 @@
 import Foundation
 
 
-internal class PrivateKitLocationReader {
+class PrivateKitLocationReader {
 
     private var sortedLocations: [GeoLocationRecord] = []
 

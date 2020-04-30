@@ -1,7 +1,7 @@
 import Foundation
 import TCNClient
 
-internal class ReportUploader: NSObject {
+class ReportUploader: NSObject {
 
     private let geoHashPrecision = 6
 

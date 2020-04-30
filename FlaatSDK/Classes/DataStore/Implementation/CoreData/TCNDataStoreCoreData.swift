@@ -79,7 +79,8 @@ class TCNDataStoreCoreData: TCNDataStore {
 
     func cleanupOldEncounters(untilDate: Date) throws {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "TCNEncounter")
-        fetchRequest.predicate = NSPredicate(format: "lastTime <= %@", argumentArray: [untilDate])
+         // do not delete encounters with linked reports
+        fetchRequest.predicate = NSPredicate(format: "lastTime <= %@ AND linkedReportImpl == nil", argumentArray: [untilDate])
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         do {
             try managedObjectContext.execute(deleteRequest)
@@ -89,7 +90,7 @@ class TCNDataStoreCoreData: TCNDataStore {
         }
     }
 
-    func saveOutgoingReport(_ report: SignedReport, dateCreated: Date) throws {
+    func saveOutgoingReport(_ report: SignedReport, dateCreated: Date) throws -> OutgoingTCNReport  {
         let newReport = NSEntityDescription.insertNewObject(forEntityName: "OutgoingTCNReport", into: managedObjectContext) as! OutgoingTCNReportImpl
 
         do {
@@ -105,6 +106,8 @@ class TCNDataStoreCoreData: TCNDataStore {
         } catch {
             throw TCNDataError.writeFailure
         }
+
+        return newReport
     }
 
     func markReportSubmitted(_ report: OutgoingTCNReport, onDate date: Date) throws {
