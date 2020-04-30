@@ -30,10 +30,11 @@ protocol TCNDataStore {
     func loadTCNEncounters(fromDate: Date?) throws -> [TCNEncounter]
     func cleanupOldEncounters(untilDate: Date) throws
 
-    func saveOutgoingReport(_ report: OutgoingTCNReport) throws
+    func saveOutgoingReport(_ report: TCNClient.SignedReport, dateCreated: Date) throws
+    func markReportSubmitted(_ report: OutgoingTCNReport, onDate date: Date) throws
     func fetchOutgoingReports(onlyNotSent: Bool) throws -> [OutgoingTCNReport]
 
-    func saveIncomingReport(_ report: IncomingTCNReport) throws
+    func saveIncomingReports(_ reports: [TCNClient.Report], dateReceived: Date) throws
     func fetchIncomingReports(onlyUnprocessed: Bool) throws -> [IncomingTCNReport]
     func deleteIncomingReports(_ reports: [IncomingTCNReport]) throws
 

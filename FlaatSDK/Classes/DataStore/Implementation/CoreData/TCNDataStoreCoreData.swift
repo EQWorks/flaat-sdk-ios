@@ -6,6 +6,8 @@ class TCNDataStoreCoreData: TCNDataStore {
 
     let persistentContainer: NSPersistentContainer
 
+    private var managedObjectContext: NSManagedObjectContext { return persistentContainer.viewContext }
+
     init() throws {
         guard let modelURL = Bundle(for: type(of: self)).url(forResource: "TCNDataStore", withExtension:"momd") else {
             Log.error("Cannot find CoreData model file for TCN Data Store")
@@ -28,7 +30,6 @@ class TCNDataStoreCoreData: TCNDataStore {
     }
 
     func saveEncounteredTCN(_ tcn: TemporaryContactNumber, timestamp: Date, distance: Double) throws {
-        let managedObjectContext = persistentContainer.viewContext
         let tcnBase64 = tcn.bytes.base64EncodedString()
 
         let fetchRequest = NSFetchRequest<TCNEncounterImpl>(entityName: "TCNEncounter")
@@ -57,7 +58,6 @@ class TCNDataStoreCoreData: TCNDataStore {
         do {
             try managedObjectContext.save()
         } catch {
-            Log.error("Failed to save new TCN encounter: \(error)")
             throw TCNDataError.writeFailure
         }
     }
@@ -65,41 +65,144 @@ class TCNDataStoreCoreData: TCNDataStore {
     func loadTCNEncounters(fromDate: Date?) throws -> [TCNEncounter] {
         let fetchRequest = NSFetchRequest<TCNEncounterImpl>(entityName: "TCNEncounter")
 
+        if let fromDate = fromDate {
+            fetchRequest.predicate = NSPredicate(format: "lastTime >= %@", argumentArray: [fromDate])
+        }
+
         do {
-            let fetchedEncounters = try persistentContainer.viewContext.fetch(fetchRequest)
+            let fetchedEncounters = try managedObjectContext.fetch(fetchRequest)
             return fetchedEncounters
         } catch {
-            Log.error("Failed to fetch TCN encounters: \(error)")
             throw TCNDataError.readFailure
         }
     }
 
     func cleanupOldEncounters(untilDate: Date) throws {
-
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "TCNEncounter")
+        fetchRequest.predicate = NSPredicate(format: "lastTime <= %@", argumentArray: [untilDate])
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        do {
+            try managedObjectContext.execute(deleteRequest)
+            try managedObjectContext.save()
+        } catch {
+            throw TCNDataError.writeFailure
+        }
     }
 
-    func saveOutgoingReport(_ report: OutgoingTCNReport) throws {
+    func saveOutgoingReport(_ report: SignedReport, dateCreated: Date) throws {
+        let newReport = NSEntityDescription.insertNewObject(forEntityName: "OutgoingTCNReport", into: managedObjectContext) as! OutgoingTCNReportImpl
 
+        do {
+            newReport.reportData = try report.serializedData()
+        } catch {
+            throw TCNDataError.invalidDataFormat
+        }
+
+        newReport.dateCreated = dateCreated
+
+        do {
+            try managedObjectContext.save()
+        } catch {
+            throw TCNDataError.writeFailure
+        }
+    }
+
+    func markReportSubmitted(_ report: OutgoingTCNReport, onDate date: Date) throws {
+        guard let report = report as? OutgoingTCNReportImpl else {
+            throw TCNDataError.invalidDataFormat
+        }
+
+        report.dateSubmitted = date
+
+        do {
+            try managedObjectContext.save()
+        } catch {
+            throw TCNDataError.writeFailure
+        }
     }
 
     func fetchOutgoingReports(onlyNotSent: Bool) throws -> [OutgoingTCNReport] {
-        return []
+        let fetchRequest = NSFetchRequest<OutgoingTCNReportImpl>(entityName: "OutgoingTCNReport")
+
+        if onlyNotSent {
+            fetchRequest.predicate = NSPredicate(format: "dateSubmitted == nil")
+        }
+
+        do {
+            let fetchedReports = try managedObjectContext.fetch(fetchRequest)
+            return fetchedReports
+        } catch {
+            throw TCNDataError.readFailure
+        }
     }
 
-    func saveIncomingReport(_ report: IncomingTCNReport) throws {
+    func saveIncomingReports(_ reports: [TCNClient.Report], dateReceived: Date) throws {
+        for report in reports {
+            let newReport = NSEntityDescription.insertNewObject(forEntityName: "IncomingTCNReport", into: managedObjectContext) as! IncomingTCNReportImpl
 
+            do {
+                newReport.reportData = try report.serializedData()
+            } catch {
+                throw TCNDataError.invalidDataFormat
+            }
+
+            newReport.dateReceived = dateReceived
+        }
+
+        do {
+            try managedObjectContext.save()
+        } catch {
+            throw TCNDataError.writeFailure
+        }
     }
 
     func fetchIncomingReports(onlyUnprocessed: Bool) throws -> [IncomingTCNReport] {
-        return []
+        let fetchRequest = NSFetchRequest<IncomingTCNReportImpl>(entityName: "IncomingTCNReport")
+
+        if onlyUnprocessed {
+            fetchRequest.predicate = NSPredicate(format: "processed == NO")
+        }
+
+        do {
+            let fetchedReports = try managedObjectContext.fetch(fetchRequest)
+            return fetchedReports
+        } catch {
+            throw TCNDataError.readFailure
+        }
     }
 
     func deleteIncomingReports(_ reports: [IncomingTCNReport]) throws {
+        for report in reports {
+            if let report = report as? IncomingTCNReportImpl {
+                managedObjectContext.delete(report)
+            }
+        }
 
+        do {
+            try managedObjectContext.save()
+        } catch {
+            throw TCNDataError.writeFailure
+        }
     }
 
     func linkEncounters(_ encounters: [TCNEncounter], toReport report: IncomingTCNReport) throws {
+        guard let encounters = encounters as? [TCNEncounterImpl] else {
+            Log.error("Invalid objects passed as TCN encounters")
+            throw TCNDataError.invalidDataFormat
+        }
 
+        guard let report = report as? IncomingTCNReportImpl else {
+            Log.error("Invalid object passed as incoming report")
+            throw TCNDataError.invalidDataFormat
+        }
+
+        report.tcnEncounters = NSSet(arrayLiteral: encounters)
+
+        do {
+            try managedObjectContext.save()
+        } catch {
+            throw TCNDataError.writeFailure
+        }
     }
 
 }
