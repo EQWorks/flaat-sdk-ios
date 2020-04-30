@@ -73,6 +73,7 @@ class ReportAnalyzer {
 
     private func saveReports(_ reports: [Report]) throws {
         try dataStore.saveIncomingReports(reports, dateReceived: Date())
+        UserDefaultsStore.lastReceivedReportDate = Date()
     }
 
     private func getLocations() -> [GeoLocation] {

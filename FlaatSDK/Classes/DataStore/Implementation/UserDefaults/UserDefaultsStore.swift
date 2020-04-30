@@ -4,6 +4,7 @@ import TCNClient
 class UserDefaultsStore: UnsecureKeyStore {
 
     private let tckKey = "Flaat-CurrentTCK"
+    private static let lastReceivedReportDateKey = "Flaat-LastReceivedReportDate"
 
     func saveNewTCK(_ tck: TemporaryContactKey) throws {
         UserDefaults.standard.set(tck.asDict(), forKey: tckKey)
@@ -20,6 +21,17 @@ class UserDefaultsStore: UnsecureKeyStore {
     func deleteCurrentTCK() throws {
         UserDefaults.standard.removeObject(forKey: tckKey)
     }
+
+    static var lastReceivedReportDate: Date? {
+        get {
+            return UserDefaults.standard.object(forKey: lastReceivedReportDateKey) as? Date
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: lastReceivedReportDateKey)
+        }
+    }
+
+    // TODO: add possibility to store risk assessment parameters
 }
 
 private extension TemporaryContactKey {
