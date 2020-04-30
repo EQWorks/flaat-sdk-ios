@@ -11,9 +11,9 @@ class KeychainKeyStore: SecureKeyStore {
             kSecAttrAccount: account,
             kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
             kSecValueData: rak.serializedData()
-            ] as [String: Any]
+            ] as CFDictionary
 
-        let status = SecItemAdd(query as CFDictionary, nil)
+        let status = SecItemAdd(query, nil)
         if status != errSecSuccess {
             throw TCNKeyStoreError.keychainSaveFailed(status)
         }
@@ -24,10 +24,10 @@ class KeychainKeyStore: SecureKeyStore {
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: account,
             kSecReturnData: true
-            ] as [String: Any]
+            ] as CFDictionary
 
         var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        let status = SecItemCopyMatching(query, &item)
         switch status {
             case errSecSuccess:
                 guard let data = item as? Data else { return nil }
@@ -44,9 +44,9 @@ class KeychainKeyStore: SecureKeyStore {
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: account,
             kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
-            ] as [String: Any]
+            ] as CFDictionary
 
-        let status = SecItemDelete(query as CFDictionary)
+        let status = SecItemDelete(query)
         if status != errSecSuccess && status != errSecItemNotFound {
             throw TCNKeyStoreError.keychainSaveFailed(status)
         }
