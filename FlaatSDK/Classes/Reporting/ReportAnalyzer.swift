@@ -9,47 +9,70 @@ class ReportAnalyzer {
         self.dataStore = dataStore
     }
 
-    func downloadAndAnalyzeReports(completion: @escaping (_ infected: Bool) -> Void) {
-        FlaatAPI.default.downloadReports(locations: []) { (result) in
-            switch result {
+    func downloadAndAnalyzeReports(completion: @escaping (_ result: Result<Bool, Error>) -> Void) {
+        FlaatAPI.default.downloadReports(locations: []) { (callResult) in
+            switch callResult {
             case .failure(let error):
                 Log.error("Failed to download reports: \(error)")
-                completion(false)
+                completion(Result.failure(error))
             case .success(let serializedReports):
-                self.saveReports(serializedReports)
+                Log.info("Successfully downloaded \(serializedReports.count) reports. Saving to persistent store.")
+                let reports = self.convertDataToReports(serializedReports)
 
-                // TODO: swallow exception temporarily
+                do {
+                    try self.saveReports(reports)
+                } catch {
+                    Log.error("Cannot save incoming TCN reports to persistent store: \(error)")
+                }
 
-                let infected = try? self.analyzeReports(serializedReports)
-                completion(infected ?? false)
-                Log.info("Successfully downloaded \(serializedReports.count) reports")
+                let result = Result { try self.analyzeReports() }
+                completion(result)
             }
         }
     }
 
-    private func analyzeReports(_ serializedReports: [Data]) throws -> Bool {
+    private func analyzeReports() throws -> Bool {
         let encounteredTCNs = try dataStore.loadTCNEncounters(fromDate: Date().addingTimeInterval(-60.0*60*24*14))
         let encounteredTCNData = Set(encounteredTCNs.map { $0.tcn.bytes })
 
-        for reportData in serializedReports.reversed() {
-            guard let report = try? TCNClient.SignedReport(serializedData: reportData) else {
-                Log.error("Cannot deserialize report \(reportData.base64EncodedString())")
-                continue
-            }
+        let reportsToProcess = try dataStore.fetchIncomingReports(onlyUnprocessed: true)
+        var reportsToDelete: [IncomingTCNReport] = []
 
-            let reportTCNs = Set(report.report.getTemporaryContactNumbers().map { $0.bytes } )
+        for report in reportsToProcess {
+            let reportTCNs = Set( report.tcnReport.getTemporaryContactNumbers().map { $0.bytes } )
             let intersectedTCNs = reportTCNs.intersection(encounteredTCNData)
+
+            // TODO: link reports with TCNs
+
             if !intersectedTCNs.isEmpty {
                 Log.info("Discovered intersecting TCNs! List: \(intersectedTCNs.map {$0.base64EncodedString()} )")
                 return true
+            } else {
+                reportsToDelete.append(report)
             }
         }
+
+        try dataStore.deleteIncomingReports(reportsToDelete)
 
         return false
     }
 
-    private func saveReports(_ serializedReports: [Data]) {
-        // TODO: implement
+    private func convertDataToReports(_ serializedReports: [Data]) -> [Report] {
+        let reports = serializedReports.compactMap { reportData -> TCNClient.Report? in
+            do {
+                let report = try TCNClient.Report(serializedData: reportData)
+                return report
+            } catch {
+                Log.error("Cannot deserialize report \(reportData.base64EncodedString()): \(error)")
+                return nil
+            }
+        }
+
+        return reports
+    }
+
+    private func saveReports(_ reports: [Report]) throws {
+        try dataStore.saveIncomingReports(reports, dateReceived: Date())
     }
 
     private func getLocations() -> [GeoLocation] {

@@ -46,6 +46,7 @@
 		8063C9044134897106EC2EAC /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		B9A3A050F10A79B7710BC001 /* Pods-FlaatSDK_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlaatSDK_Tests.release.xcconfig"; path = "Target Support Files/Pods-FlaatSDK_Tests/Pods-FlaatSDK_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		C0AF6EFFF7223E257179BD8E /* Pods-FlaatSDK_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlaatSDK_Example.debug.xcconfig"; path = "Target Support Files/Pods-FlaatSDK_Example/Pods-FlaatSDK_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		CFA2186E245B84D200DC49D7 /* FlaatDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlaatDemo.entitlements; sourceTree = "<group>"; };
 		E08442F1C85980023AA04521 /* Pods-FlaatSDK_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlaatSDK_Example.release.xcconfig"; path = "Target Support Files/Pods-FlaatSDK_Example/Pods-FlaatSDK_Example.release.xcconfig"; sourceTree = "<group>"; };
 		EBE323D52EDFE2027C5A40FC /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		FAD537903C49EA592F92226D /* Pods_FlaatDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlaatDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,6 +88,7 @@
 		607FACC71AFB9204008FA782 = {
 			isa = PBXGroup;
 			children = (
+				CFA2186E245B84D200DC49D7 /* FlaatDemo.entitlements */,
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
 				607FACD21AFB9204008FA782 /* Example for FlaatSDK */,
 				607FACE81AFB9204008FA782 /* Tests */,
@@ -511,6 +513,7 @@
 			baseConfigurationReference = 659A4D204639EED10B529E1C /* Pods-FlaatDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FlaatDemo.entitlements;
 				DEVELOPMENT_TEAM = V9FBFWW4G2;
 				INFOPLIST_FILE = FlaatSDK/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -528,6 +531,7 @@
 			baseConfigurationReference = 79BFFE556EB89DE59348324F /* Pods-FlaatDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FlaatDemo.entitlements;
 				DEVELOPMENT_TEAM = V9FBFWW4G2;
 				INFOPLIST_FILE = FlaatSDK/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;

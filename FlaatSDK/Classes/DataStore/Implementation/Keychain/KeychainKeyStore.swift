@@ -27,7 +27,8 @@ class KeychainKeyStore: SecureKeyStore {
             ] as [String: Any]
 
         var item: CFTypeRef?
-        switch SecItemCopyMatching(query as CFDictionary, &item) {
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        switch status {
             case errSecSuccess:
                 guard let data = item as? Data else { return nil }
                 return try ReportAuthorizationKey(serializedData: data)
@@ -46,7 +47,7 @@ class KeychainKeyStore: SecureKeyStore {
             ] as [String: Any]
 
         let status = SecItemDelete(query as CFDictionary)
-        if status != errSecSuccess {
+        if status != errSecSuccess && status != errSecItemNotFound {
             throw TCNKeyStoreError.keychainSaveFailed(status)
         }
     }

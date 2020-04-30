@@ -38,7 +38,7 @@ public class FlaatService {
         }
     }
 
-    public class func downloadAndAnalyzeReports(completion: @escaping (_ infected: Bool) -> Void) {
+    public class func downloadAndAnalyzeReports(completion: @escaping (_ infected: Result<Bool, Error>) -> Void) {
         let reportAnalyzer = ReportAnalyzer(dataStore: dataStore)
         reportAnalyzer.downloadAndAnalyzeReports(completion: completion)
     }

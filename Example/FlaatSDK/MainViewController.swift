@@ -46,15 +46,25 @@ class MainViewController: UIViewController {
         activityIndicator.startAnimating()
         sender.isEnabled = false
 
-        FlaatService.downloadAndAnalyzeReports { [weak self] (infected) -> Void in
+        FlaatService.downloadAndAnalyzeReports { [weak self] (infectedResult) -> Void in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 sender.isEnabled = true
                 self.activityIndicator.stopAnimating()
 
-                self.showSimpleAlert(title: "Check Completed",
-                    message: infected ? "You contacted someone with COVID-19" : "No contacts with COVID-19 found",
-                    buttonTitle: "Close")
+                switch infectedResult {
+                case .failure(let error):
+                    NSLog("Report download and analysis failed: \(error)")
+
+                    self.showSimpleAlert(title: "Check Failed",
+                        message: "An error occurred when downloading and analyzing reports",
+                        buttonTitle: "Close")
+                case .success(let infected):
+                    self.showSimpleAlert(title: "Check Completed",
+                        message: infected ? "You contacted someone with COVID-19" : "No contacts with COVID-19 found",
+                        buttonTitle: "Close")
+
+                }
             }
         }
     }
