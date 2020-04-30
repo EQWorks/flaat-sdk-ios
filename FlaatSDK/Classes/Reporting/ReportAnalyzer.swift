@@ -17,15 +17,19 @@ class ReportAnalyzer {
                 completion(false)
             case .success(let serializedReports):
                 self.saveReports(serializedReports)
-                let infected = self.analyzeReports(serializedReports)
-                completion(infected)
+
+                // TODO: swallow exception temporarily
+
+                let infected = try? self.analyzeReports(serializedReports)
+                completion(infected ?? false)
                 Log.info("Successfully downloaded \(serializedReports.count) reports")
             }
         }
     }
 
-    private func analyzeReports(_ serializedReports: [Data]) -> Bool {
-        let encounteredTCNs = Set(PersistentStorage.getValue(forKey: "encounteredTCNs") as? [Data] ?? [])
+    private func analyzeReports(_ serializedReports: [Data]) throws -> Bool {
+        let encounteredTCNs = try dataStore.loadTCNEncounters(fromDate: Date().addingTimeInterval(-60.0*60*24*14))
+        let encounteredTCNData = Set(encounteredTCNs.map { $0.tcn.bytes })
 
         for reportData in serializedReports.reversed() {
             guard let report = try? TCNClient.SignedReport(serializedData: reportData) else {
@@ -34,7 +38,7 @@ class ReportAnalyzer {
             }
 
             let reportTCNs = Set(report.report.getTemporaryContactNumbers().map { $0.bytes } )
-            let intersectedTCNs = reportTCNs.intersection(encounteredTCNs)
+            let intersectedTCNs = reportTCNs.intersection(encounteredTCNData)
             if !intersectedTCNs.isEmpty {
                 Log.info("Discovered intersecting TCNs! List: \(intersectedTCNs.map {$0.base64EncodedString()} )")
                 return true

@@ -55,6 +55,7 @@ class TCNDataStoreCoreData: TCNDataStore {
             newTCN.closestDistance = distance
         }
 
+        // TODO: improve saving to ensure it's not done too frequently
         do {
             try managedObjectContext.save()
         } catch {

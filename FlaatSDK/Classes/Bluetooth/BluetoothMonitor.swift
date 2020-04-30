@@ -4,23 +4,35 @@ import TCNClient
 class BluetoothMonitor {
 
     private var bluetoothService: TCNBluetoothService!
-    private let dataStore: TCNDataStore
-    private let keyStore: KeyStore
 
-    private let rak: ReportAuthorizationKey
+    private let dataStore: TCNDataStore
+    private let keyStore: TCNKeyStore
 
     private var tck: TemporaryContactKey
     private var tcn: TemporaryContactNumber
 
-    init(dataStore: TCNDataStore, keyStore: KeyStore) {
-        let rak = BluetoothMonitor.getRAK()
-        self.rak = rak
-        let tck = BluetoothMonitor.getSavedTCK() ?? BluetoothMonitor.getInitialTCK(rak: rak)
-        self.tck = tck
-        self.tcn = tck.temporaryContactNumber
-
+    init(dataStore: TCNDataStore, keyStore: TCNKeyStore) throws {
         self.dataStore = dataStore
         self.keyStore = keyStore
+
+        let currentRAK = try? keyStore.fetchCurrentRAK()
+        var currentTCK = try? keyStore.fetchCurrentTCK()
+
+        if currentRAK == nil {
+            // WARNING: All TCN keys may have to be reset only if there is no RAK saved previously or when there is an issue with readin RAK from keychain.
+            //          Whenever RAK is reset there is no way for anyone to restore previously transmitted TCNs, so the information will be lost.
+            currentTCK = try keyStore.resetTCNKeys()
+        } else if currentTCK == nil {
+            // This is an edge case that should not happen under normal circumstances. In this case we assume that we should start with initial TCK.
+            currentTCK = currentRAK!.initialTemporaryContactKey
+        }
+
+        guard let tck = currentTCK else {
+            throw TCNKeyStoreError.dataInconsistency
+        }
+
+        self.tck = tck
+        self.tcn = tck.temporaryContactNumber
     }
 
     func runMonitoring() {
@@ -30,12 +42,11 @@ class BluetoothMonitor {
 
         bluetoothService = TCNBluetoothService(tcnGenerator: { () -> Data in
             let tcn = self.tcn.bytes
-            Log.info("Someone over Bluetooth asked for TCN. Returning \(tcn.base64EncodedString()).")
+            Log.info("Another device asked for TCN. Returning \(tcn.base64EncodedString()).")
             return tcn
         }, tcnFinder: { [weak self] (tcn, distance) in
             guard let self = self else { return }
             Log.debug("Discovered new TCN: \(tcn.base64EncodedString()). Distance: \(distance ?? 0). Saving it to contacts DB...")
-            PersistentStorage.appendValue(tcn, toArrayForKey: "encounteredTCNs")
 
             do {
                 try self.dataStore.saveEncounteredTCN(TemporaryContactNumber(bytes: tcn), timestamp: Date(), distance: distance ?? 0)
@@ -43,10 +54,6 @@ class BluetoothMonitor {
                 Log.error("Cannot save TCN \(tcn.base64EncodedString())")
                 fatalError("Cannot save encountered TCN")
             }
-
-//        }, tcnFinder: { (tcn) in
-//            Log.debug("Discovered new TCN: \(tcn.base64EncodedString()). Saving it to contacts DB...")
-//            PersistentStorage.appendValue(tcn, toArrayForKey: "encounteredTCNs")
         }, errorHandler: { (error) in
             Log.error("Bluetooth service error: \(error)")
         })
@@ -59,13 +66,17 @@ class BluetoothMonitor {
     }
 
     private func startTCNRotation() {
-        // TODO: right now we are doing rotation every 5 seconds for debugging purposes
-        Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { (timer) in
+        // TODO: right now we are doing rotation every 5 seconds for debugging purposes but need to make it every 10-20 min in Release config
+        Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] (timer) in
+            guard let self = self else { return }
+
             self.tck = self.tck.ratchet()!
             self.tcn = self.tck.temporaryContactNumber
-
-            PersistentStorage.setValue(self.tck.bytes, forKey: "tckBytes")
-            PersistentStorage.setValue(self.tck.index, forKey: "tckIndex")
+            do {
+                try self.keyStore.saveNewTCK(self.tck)
+            } catch {
+                fatalError("Cannot save new TCK")
+            }
 
             Log.debug("Rotating TCN. New TCN is: \(self.tcn.bytes.base64EncodedString())")
         }
@@ -77,39 +88,10 @@ class BluetoothMonitor {
         let memoType = MemoType.CovidWatchV1
         let memoData = Data([1])
 
+        guard let rak = try keyStore.fetchCurrentRAK() else {
+            throw TCNKeyStoreError.dataInconsistency
+        }
+
         return try rak.createSignedReport(memoType: memoType, memoData: memoData, startIndex: startIndex, endIndex: endIndex)
     }
-
-    static func getInitialTCK(rak: ReportAuthorizationKey) -> TemporaryContactKey {
-        let tck = rak.initialTemporaryContactKey
-        PersistentStorage.setValue(tck.bytes, forKey: "tckBytes")
-        PersistentStorage.setValue(tck.index, forKey: "tckIndex")
-        return tck
-    }
-
-    static func getSavedTCK() -> TemporaryContactKey? {
-        if let tckBytes = PersistentStorage.getValue(forKey: "tckBytes") as? Data,
-           let tckIndex = PersistentStorage.getValue(forKey: "tckIndex") as? Int,
-           let rvkBytes = PersistentStorage.getValue(forKey: "publicKey") as? Data {
-            return TemporaryContactKey(
-                index: UInt16(tckIndex),
-                reportVerificationPublicKeyBytes: rvkBytes,
-                bytes: tckBytes)
-        }
-
-        return nil
-    }
-
-    static func getRAK() -> ReportAuthorizationKey {
-        if let privateKey = PersistentStorage.getValue(forKey: "privateKey") as? Data,
-           let rak = try? ReportAuthorizationKey(serializedData: privateKey) {
-            return rak
-        } else {
-            let rak = ReportAuthorizationKey()
-            PersistentStorage.setValue(rak.serializedData(), forKey: "privateKey")
-            PersistentStorage.setValue(rak.initialTemporaryContactKey.reportVerificationPublicKeyBytes, forKey: "publicKey")
-            return rak
-        }
-    }
-
 }

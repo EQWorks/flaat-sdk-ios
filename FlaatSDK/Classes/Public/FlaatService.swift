@@ -4,14 +4,16 @@ public class FlaatService {
 
     private static var bluetoothMonitor: BluetoothMonitor!
     private static var dataStore: TCNDataStore!
-    private static var keyStore: KeyStore!
+    private static var keyStore: TCNKeyStore!
 
     public class func launch(apiKey: String, logLevel: LogLevel = .info) throws {
         FlaatAPI.apiKey = apiKey
         Log.logLevel = logLevel
 
         dataStore = try TCNDataStoreCoreData()
-        bluetoothMonitor = BluetoothMonitor(dataStore: dataStore, keyStore: keyStore)
+        keyStore = TCNKeyStoreImpl(secureStore: KeychainKeyStore(), unsecureKeyStore: UserDefaultsStore())
+
+        bluetoothMonitor = try BluetoothMonitor(dataStore: dataStore, keyStore: keyStore)
         bluetoothMonitor.runMonitoring()
     }
 
