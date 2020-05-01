@@ -2,22 +2,41 @@ import Foundation
 
 public class FlaatService {
 
-    private static var bluetoothMonitor: BluetoothMonitor!
-    private static var dataStore: TCNDataStore!
-    private static var keyStore: TCNKeyStore!
+    public static let shared = FlaatService()
 
-    public class func launch(apiKey: String, logLevel: LogLevel = .info) throws {
-        FlaatAPI.apiKey = apiKey
-        Log.logLevel = logLevel
+    private var configuration: FlaatConfiguration!
 
-        dataStore = try TCNDataStoreCoreData()
-        keyStore = TCNKeyStoreImpl(secureStore: KeychainKeyStore(), unsecureKeyStore: UserDefaultsStore())
+    private var bluetoothMonitor: BluetoothMonitor!
+    private var dataStore: TCNDataStore!
 
-        bluetoothMonitor = try BluetoothMonitor(dataStore: dataStore, keyStore: keyStore)
-        bluetoothMonitor.runMonitoring()
+    private init() {
+        do {
+            dataStore = try TCNDataStoreCoreData()
+        } catch {
+            Log.error("Data store cannot be initialized due to error: \(error)")
+        }
     }
 
-    public class func uploadReport(days: Int = 21, validationPin: String, completion: @escaping (Error?) -> Void) {
+    /// Launches Bluetooth monitoring and TCN exchange, as well as periodic downloading of reports from Flaat backend.
+    public func startTracing(configuration: FlaatConfiguration) throws {
+        try validateConfiguration(configuration)
+        guard dataStore != nil else {
+            throw FlaatError.dataStoreError()
+        }
+
+        FlaatAPI.apiKey = configuration.apiKey
+        Log.logLevel = configuration.logLevel
+
+        do {
+            let keyStore = TCNKeyStoreImpl(secureStore: KeychainKeyStore(), unsecureKeyStore: UserDefaultsStore())
+            bluetoothMonitor = try BluetoothMonitor(dataStore: dataStore, keyStore: keyStore)
+            bluetoothMonitor.runMonitoring()
+        } catch {
+            throw FlaatError.dataStoreError(cause: error)
+        }
+    }
+
+    public func uploadReport(days: Int = 21, validationPin: String, completion: @escaping (Error?) -> Void) {
         let reportUploader = ReportUploader()
         do {
             let tcnReport = try bluetoothMonitor.generateReport()
@@ -25,7 +44,7 @@ public class FlaatService {
             reportUploader.uploadReport(days: days, tcnReport: tcnReport, validationPin: validationPin, completion: { error in
                 if error != nil {
                     do {
-                        try dataStore.markReportSubmitted(savedReport, onDate: Date())
+                        try self.dataStore.markReportSubmitted(savedReport, onDate: Date())
                     } catch {
                         Log.error("Cannot mark report submitted in the data store")
                     }
@@ -38,8 +57,48 @@ public class FlaatService {
         }
     }
 
-    public class func downloadAndAnalyzeReports(completion: @escaping (_ infected: Result<Bool, Error>) -> Void) {
+    public func downloadAndAnalyzeReports(completion: @escaping (_ infected: Result<Bool, Error>) -> Void) {
         let reportAnalyzer = ReportAnalyzer(dataStore: dataStore)
         reportAnalyzer.downloadAndAnalyzeReports(completion: completion)
+    }
+
+    private func validateConfiguration(_ configuration: FlaatConfiguration) throws {
+        guard !configuration.apiKey.isEmpty else {
+            throw FlaatError.invalidConfiguration(message: "No API key provided")
+        }
+
+        let validReportFetchIntervals = (60 * 60 * 1)...(60 * 60 * 24)
+        guard validReportFetchIntervals ~= Int(configuration.reportFetchInterval) else {
+            throw FlaatError.invalidConfiguration(message: "Report fetch interval is out of valid range")
+        }
+
+        let validTCNRotationIntervals = (60 * 5)...(60 * 20)
+        guard validTCNRotationIntervals ~= Int(configuration.tcnRotationInterval) else {
+            throw FlaatError.invalidConfiguration(message: "Report fetch interval is out of valid range")
+        }
+    }
+}
+
+public enum FlaatError: Error {
+
+    case invalidConfiguration(message: String)
+    case dataStoreError(cause: Error? = nil)
+    case apiError(cause: Error? = nil)
+}
+
+public struct FlaatConfiguration {
+
+    public var apiKey: String
+
+    public var logLevel: LogLevel = .info
+
+    /// Valid values must be between 1 and 24 hours.
+    public var reportFetchInterval: TimeInterval = 60 * 60 * 4
+
+    /// Valid values must be between 5 and 20 minutes.
+    public var tcnRotationInterval: TimeInterval = 60 * 15
+
+    public init(apiKey: String) {
+        self.apiKey = apiKey
     }
 }

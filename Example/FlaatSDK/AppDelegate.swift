@@ -9,7 +9,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
         do {
-            try FlaatService.launch(apiKey: "f9185df27b2032b12c7bfed0c9ea2ca5", logLevel: .debug)
+            var configuraton = FlaatConfiguration(apiKey: "f9185df27b2032b12c7bfed0c9ea2ca5")
+            configuraton.logLevel = .debug
+            try FlaatService.shared.startTracing(configuration: configuraton)
         } catch {
             fatalError("Cannot launch Flaat service: \(error)")
         }

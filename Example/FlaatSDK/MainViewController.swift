@@ -19,7 +19,7 @@ class MainViewController: UIViewController {
         activityIndicator.startAnimating()
         sender.isEnabled = false
 
-        FlaatService.uploadReport(validationPin: "test-pin") { [weak self] (error) in
+        FlaatService.shared.uploadReport(validationPin: "test-pin") { [weak self] (error) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 sender.isEnabled = true
@@ -46,7 +46,7 @@ class MainViewController: UIViewController {
         activityIndicator.startAnimating()
         sender.isEnabled = false
 
-        FlaatService.downloadAndAnalyzeReports { [weak self] (infectedResult) -> Void in
+        FlaatService.shared.downloadAndAnalyzeReports { [weak self] (infectedResult) -> Void in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 sender.isEnabled = true
