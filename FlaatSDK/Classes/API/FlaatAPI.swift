@@ -4,24 +4,31 @@ typealias DataTaskCompletionHandler = (Data?, URLResponse?, Error?) -> Void
 
 class FlaatAPI {
 
+    struct APIEndpoints {
+
+        static let login = "/login"
+        static let tcnReports = "/tcnreport"
+    }
+
     static let `default` = FlaatAPI()
 
     static var apiKey: String?
+    static var buildConfig: FlaatConfiguration.BuildConfig = .release
 
     private var accessToken: String?
 
-    func uploadReport(_ report: TCNReport, completion: @escaping (APIResult<Void>) -> Void) {
+    func uploadReport(_ report: TCNReport, completion: @escaping (Result<Void, Error>) -> Void) {
         // TODO: properly configure dev/prod endpoint switching
-        prepareAndRunRequest(url: APIEndpoints.dev.tcnReports, method: "POST", params: report.json()) { (data, response, error) in
+        prepareAndRunRequest(url: endpointURL(APIEndpoints.tcnReports), method: "POST", params: report.json()) { (data, response, error) in
             if let error = error {
-                completion(APIResult.failure(error))
+                completion(.failure(error))
             } else {
-                completion(APIResult.success(()))
+                completion(.success(()))
             }
         }
     }
 
-    func downloadReports(locations: [GeoLocation], verified: Bool = false, fromDate: Date? = nil, completion: @escaping (APIResult<[Data]>) -> Void) {
+    func downloadReports(locations: [GeoLocation], verified: Bool = false, fromDate: Date? = nil, completion: @escaping (Result<[Data], Error>) -> Void) {
         var params: [String: Any] = ["verified": verified]
 
         if let fromDate = fromDate {
@@ -32,23 +39,23 @@ class FlaatAPI {
             params["locations"] = "[\(locations.map({ $0.geoHash(precision: 3) }).joined(separator: ","))]"
         }
 
-        prepareAndRunRequest(url: APIEndpoints.dev.tcnReports, method: "GET", params: params) { (data, response, error) in
+        prepareAndRunRequest(url: endpointURL(APIEndpoints.tcnReports), method: "GET", params: params) { (data, response, error) in
             if let error = error {
-                completion(APIResult.failure(error))
+                completion(.failure(error))
             } else {
                 guard let data = data else {
-                    completion(APIResult.failure(APIError(message: "Empty response")))
+                    completion(.failure(APIError(message: "Empty response")))
                     return
                 }
 
                 guard let dict = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                       let serializedReports = dict["reports"] as? [String] else {
-                    completion(APIResult.failure(APIError(message: "Cannot parse data in response")))
+                    completion(.failure(APIError(message: "Cannot parse data in response")))
                     return
                 }
 
                 let reports = serializedReports.compactMap { Data(base64Encoded: $0) }
-                completion(APIResult.success(reports))
+                completion(.success(reports))
             }
         }
     }
@@ -132,7 +139,7 @@ class FlaatAPI {
             "app_name": appName,
             "access_key": apiKey]
 
-        prepareAndRunRequest(url: APIEndpoints.dev.login, method: "POST", params: loginParams, requireAuth: false) { (data, response, error) in
+        prepareAndRunRequest(url: endpointURL(APIEndpoints.login), method: "POST", params: loginParams, requireAuth: false) { (data, response, error) in
             guard error == nil else {
                 completion(error)
                 return
@@ -149,7 +156,6 @@ class FlaatAPI {
             self.accessToken = token
             completion(nil)
         }
-
     }
 
 
@@ -178,5 +184,21 @@ class FlaatAPI {
         Log.debug("Request body: \(String(data: serializedJson, encoding: .utf8)!)")
 
         return request
+    }
+
+    private func endpointURL(_ path: String) -> String {
+        return FlaatAPI.buildConfig.serviceBaseURL + path
+    }
+}
+
+private extension FlaatConfiguration.BuildConfig {
+
+    var serviceBaseURL: String {
+        switch self {
+        case .debug:
+            return "https://api.flaat.io/dev"
+        case .release:
+            return "https://api.flaat.io/prod"
+        }
     }
 }

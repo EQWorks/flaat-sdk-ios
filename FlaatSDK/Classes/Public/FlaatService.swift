@@ -64,6 +64,7 @@ public class FlaatService {
         }
 
         FlaatAPI.apiKey = configuration.apiKey
+        FlaatAPI.buildConfig = configuration.buildConfig
         Log.logLevel = configuration.logLevel
 
         do {
