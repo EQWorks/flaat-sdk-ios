@@ -9,7 +9,8 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '12.0'
   s.swift_versions = ['5.0', '5.1', '5.2']
-  s.source_files = 'FlaatSDK/Classes/**/*'
+  s.source_files = 'FlaatSDK/Classes/**/*.swift', 'FlaatSDK/Classes/**/*.{h,m}'
+  s.resources = 'FlaatSDK/**/*.xcdatamodeld'
 
   s.pod_target_xcconfig = { 'OTHER_LDFLAGS' => '$(inherited) -framework "TCNClient"', 'FRAMEWORK_SEARCH_PATHS' => "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/TCNClient" }
 
