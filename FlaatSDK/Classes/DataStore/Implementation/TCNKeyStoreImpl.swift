@@ -21,21 +21,20 @@ class TCNKeyStoreImpl: TCNKeyStore {
         let newTCK = newRAK.initialTemporaryContactKey
         try unsecureKeyStore.saveNewTCK(newTCK)
 
+        // TODO: consider saving TCK in secure key store as well (it won't be deleted upon app deletion from device)
+
         return newTCK
     }
 
     func fetchCurrentRAK() throws -> ReportAuthorizationKey? {
-        // TBD
-        return nil
+        return try secureStore.fetchRAK()
     }
 
     func fetchCurrentTCK() throws -> TemporaryContactKey? {
-        // TBD
-        return nil
+        return try unsecureKeyStore.fetchCurrentTCK()
     }
 
     func saveNewTCK(_ tck: TemporaryContactKey) throws {
-        // TBD
+        try unsecureKeyStore.saveNewTCK(tck)
     }
-
 }
