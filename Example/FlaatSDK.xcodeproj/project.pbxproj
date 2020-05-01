@@ -519,6 +519,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -D DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.eqworks.FlaatDemo;
 				PRODUCT_NAME = FlaatDemo;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;

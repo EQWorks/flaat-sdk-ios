@@ -29,7 +29,7 @@ public class FlaatService {
 
         do {
             let keyStore = TCNKeyStoreImpl(secureStore: KeychainKeyStore(), unsecureKeyStore: UserDefaultsStore())
-            bluetoothMonitor = try BluetoothMonitor(dataStore: dataStore, keyStore: keyStore)
+            bluetoothMonitor = try BluetoothMonitor(dataStore: dataStore, keyStore: keyStore, tcnRotationInterval: configuration.tcnRotationInterval)
             bluetoothMonitor.runMonitoring()
         } catch {
             throw FlaatError.dataStoreError(cause: error)
@@ -67,15 +67,21 @@ public class FlaatService {
             throw FlaatError.invalidConfiguration(message: "No API key provided")
         }
 
-        let validReportFetchIntervals = (60 * 60 * 1)...(60 * 60 * 24)
-        guard validReportFetchIntervals ~= Int(configuration.reportFetchInterval) else {
-            throw FlaatError.invalidConfiguration(message: "Report fetch interval is out of valid range")
-        }
+        if configuration.buildConfig == .release {
+            let validReportFetchIntervals = (60 * 60 * 1)...(60 * 60 * 24)
+            guard validReportFetchIntervals ~= Int(configuration.reportFetchInterval) else {
+                throw FlaatError.invalidConfiguration(message: "Report fetch interval is out of valid range")
+            }
 
-        let validTCNRotationIntervals = (60 * 5)...(60 * 20)
-        guard validTCNRotationIntervals ~= Int(configuration.tcnRotationInterval) else {
-            throw FlaatError.invalidConfiguration(message: "Report fetch interval is out of valid range")
+            let validTCNRotationIntervals = (60 * 5)...(60 * 20)
+            guard validTCNRotationIntervals ~= Int(configuration.tcnRotationInterval) else {
+                throw FlaatError.invalidConfiguration(message: "TCN rotation interval is out of valid range")
+            }
         }
+    }
+
+    private func launchPeriodicReportDownloads() {
+
     }
 }
 
@@ -88,7 +94,14 @@ public enum FlaatError: Error {
 
 public struct FlaatConfiguration {
 
+    public enum BuildConfig {
+        case debug
+        case release
+    }
+
     public var apiKey: String
+
+    public var buildConfig: BuildConfig = .release
 
     public var logLevel: LogLevel = .info
 

@@ -7,13 +7,15 @@ class BluetoothMonitor {
 
     private let dataStore: TCNDataStore
     private let keyStore: TCNKeyStore
+    private let tcnRotationInterval: TimeInterval
 
     private var tck: TemporaryContactKey
     private var tcn: TemporaryContactNumber
 
-    init(dataStore: TCNDataStore, keyStore: TCNKeyStore) throws {
+    init(dataStore: TCNDataStore, keyStore: TCNKeyStore, tcnRotationInterval: TimeInterval) throws {
         self.dataStore = dataStore
         self.keyStore = keyStore
+        self.tcnRotationInterval = tcnRotationInterval
 
         let currentRAK = try? keyStore.fetchCurrentRAK()
         var currentTCK = try? keyStore.fetchCurrentTCK()
@@ -48,11 +50,14 @@ class BluetoothMonitor {
             guard let self = self else { return }
             Log.debug("Discovered new TCN: \(tcn.base64EncodedString()). Distance: \(distance ?? 0). Saving it to contacts DB...")
 
-            do {
-                try self.dataStore.saveEncounteredTCN(TemporaryContactNumber(bytes: tcn), timestamp: Date(), distance: distance ?? 0)
-            } catch {
-                Log.error("Cannot save TCN \(tcn.base64EncodedString())")
-                fatalError("Cannot save encountered TCN")
+            // TODO: temporarily send to main queue but needs to be fixed for saving in background queue
+            DispatchQueue.main.async {
+                do {
+                    try self.dataStore.saveEncounteredTCN(TemporaryContactNumber(bytes: tcn), timestamp: Date(), distance: distance ?? 0)
+                } catch {
+                    Log.error("Cannot save TCN \(tcn.base64EncodedString())")
+                    fatalError("Cannot save encountered TCN")
+                }
             }
         }, errorHandler: { (error) in
             Log.error("Bluetooth service error: \(error)")
@@ -66,8 +71,7 @@ class BluetoothMonitor {
     }
 
     private func startTCNRotation() {
-        // TODO: right now we are doing rotation every 5 seconds for debugging purposes but need to make it every 10-20 min in Release config
-        Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] (timer) in
+        Timer.scheduledTimer(withTimeInterval: tcnRotationInterval, repeats: true) { [weak self] (timer) in
             guard let self = self else { return }
 
             self.tck = self.tck.ratchet()!
