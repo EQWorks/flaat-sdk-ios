@@ -28,11 +28,7 @@ class FlaatAPI {
             params["fromDate"] = fromDate.timeIntervalSince1970
         }
 
-        if locations.isEmpty {
-            // TODO: consider what to do with no locations
-            // TODO: tmp impl with hardcoded location
-            params["locations"] = "[\"dpz\"]"
-        } else {
+        if !locations.isEmpty {
             params["locations"] = "[\(locations.map({ $0.geoHash(precision: 3) }).joined(separator: ","))]"
         }
 
