@@ -59,9 +59,13 @@ class MainViewController: UIViewController {
                     self.showSimpleAlert(title: "Check Failed",
                         message: "An error occurred when downloading and analyzing reports",
                         buttonTitle: "Close")
-                case .success(let infected):
+                case .success(let status):
+                    var message = "You contacted someone with COVID-19"
+                    if case ContactStatus.noContacts = status {
+                        message = "No contacts with COVID-19 found"
+                    }
                     self.showSimpleAlert(title: "Check Completed",
-                        message: infected ? "You contacted someone with COVID-19" : "No contacts with COVID-19 found",
+                        message: message,
                         buttonTitle: "Close")
 
                 }

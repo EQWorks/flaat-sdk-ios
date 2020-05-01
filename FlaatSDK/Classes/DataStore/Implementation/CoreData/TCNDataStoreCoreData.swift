@@ -160,12 +160,10 @@ class TCNDataStoreCoreData: TCNDataStore {
         }
     }
 
-    func fetchIncomingReports(onlyUnprocessed: Bool) throws -> [IncomingTCNReport] {
+    func fetchIncomingReports(processed: Bool) throws -> [IncomingTCNReport] {
         let fetchRequest = NSFetchRequest<IncomingTCNReportImpl>(entityName: "IncomingTCNReport")
 
-        if onlyUnprocessed {
-            fetchRequest.predicate = NSPredicate(format: "processed == NO")
-        }
+        fetchRequest.predicate = NSPredicate(format: "processed == %@", processed)
 
         do {
             let fetchedReports = try managedObjectContext.fetch(fetchRequest)
@@ -201,6 +199,7 @@ class TCNDataStoreCoreData: TCNDataStore {
         }
 
         report.tcnEncounters = NSSet(arrayLiteral: encounters)
+        report.processed = true
 
         do {
             try managedObjectContext.save()

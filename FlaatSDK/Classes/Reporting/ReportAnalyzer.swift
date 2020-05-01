@@ -9,8 +9,8 @@ class ReportAnalyzer {
         self.dataStore = dataStore
     }
 
-    func downloadAndAnalyzeReports(completion: @escaping (_ result: Result<Bool, Error>) -> Void) {
-        FlaatAPI.default.downloadReports(locations: []) { (callResult) in
+    func downloadAndAnalyzeReports(completion: @escaping (_ result: Result<ContactStatus, Error>) -> Void) {
+        FlaatAPI.default.downloadReports(locations: getLocations()) { (callResult) in
             switch callResult {
             case .failure(let error):
                 Log.error("Failed to download reports: \(error)")
@@ -31,12 +31,13 @@ class ReportAnalyzer {
         }
     }
 
-    private func analyzeReports() throws -> Bool {
+    private func analyzeReports() throws -> ContactStatus {
         let encounteredTCNs = try dataStore.loadTCNEncounters(fromDate: Date().addingTimeInterval(-60.0*60*24*14))
         let encounteredTCNData = Set(encounteredTCNs.map { $0.tcn.bytes })
 
-        let reportsToProcess = try dataStore.fetchIncomingReports(onlyUnprocessed: true)
+        let reportsToProcess = try dataStore.fetchIncomingReports(processed: false)
         var reportsToDelete: [IncomingTCNReport] = []
+        var matchedReports: [IncomingTCNReport] = []
 
         for report in reportsToProcess {
             let reportTCNs = Set( report.tcnReport.getTemporaryContactNumbers().map { $0.bytes } )
@@ -46,7 +47,7 @@ class ReportAnalyzer {
 
             if !intersectedTCNs.isEmpty {
                 Log.info("Discovered intersecting TCNs! List: \(intersectedTCNs.map {$0.base64EncodedString()} )")
-                return true
+                matchedReports.append(report)
             } else {
                 reportsToDelete.append(report)
             }
@@ -54,7 +55,7 @@ class ReportAnalyzer {
 
         try dataStore.deleteIncomingReports(reportsToDelete)
 
-        return false
+        return matchedReports.isEmpty ? .noContacts : .confirmedContacts(riskLevel: RiskCalculator.calculateRiskLevel(reports: matchedReports))
     }
 
     private func convertDataToReports(_ serializedReports: [Data]) -> [Report] {

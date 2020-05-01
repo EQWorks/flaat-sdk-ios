@@ -37,7 +37,7 @@ class BluetoothMonitor {
         self.tcn = tck.temporaryContactNumber
     }
 
-    func runMonitoring() {
+    func startMonitoring() throws {
         guard bluetoothService == nil else {
             return
         }
@@ -67,28 +67,14 @@ class BluetoothMonitor {
 
         Log.debug("Started Bluetooth monitoring. Initial TCN is: \(tcn.bytes.base64EncodedString())")
 
-        startTCNRotation()
-    }
-
-    private func startTCNRotation() {
-        Timer.scheduledTimer(withTimeInterval: tcnRotationInterval, repeats: true) { [weak self] (timer) in
-            guard let self = self else { return }
-
-            self.tck = self.tck.ratchet()!
-            self.tcn = self.tck.temporaryContactNumber
-            do {
-                try self.keyStore.saveNewTCK(self.tck)
-            } catch {
-                fatalError("Cannot save new TCK")
-            }
-
-            Log.debug("Rotating TCN. New TCN is: \(self.tcn.bytes.base64EncodedString())")
-        }
+        try startTCNRotation()
     }
 
     func generateReport() throws -> TCNClient.SignedReport {
         let startIndex = UInt16(1)
         let endIndex = tck.index
+
+        // TODO: temporary memo until we get our own memo format defined and registered with TCN Coalition
         let memoType = MemoType.CovidWatchV1
         let memoData = Data([1])
 
@@ -97,5 +83,26 @@ class BluetoothMonitor {
         }
 
         return try rak.createSignedReport(memoType: memoType, memoData: memoData, startIndex: startIndex, endIndex: endIndex)
+    }
+
+    private func startTCNRotation() throws {
+        try rotateTCK() // do initial rotation to avoid using same TCK after app was restarted
+        Log.debug("Initial TCN is: \(tcn.bytes.base64EncodedString())")
+
+        Timer.scheduledTimer(withTimeInterval: tcnRotationInterval, repeats: true) { [weak self] (timer) in
+            guard let self = self else { return }
+            do {
+                try self.rotateTCK()
+                Log.debug("Rotating TCN. New TCN is: \(self.tcn.bytes.base64EncodedString())")
+            } catch {
+                fatalError("Cannot rotate TCK")
+            }
+        }
+    }
+
+    private func rotateTCK() throws {
+        tck = tck.ratchet()!
+        try keyStore.saveNewTCK(tck)
+        tcn = tck.temporaryContactNumber
     }
 }
