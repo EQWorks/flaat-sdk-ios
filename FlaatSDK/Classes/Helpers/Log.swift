@@ -7,7 +7,7 @@ public enum LogLevel: Int {
     case error
 }
 
-internal extension LogLevel {
+extension LogLevel {
 
     static func <=(_ left: LogLevel, _ right: LogLevel) -> Bool {
         return left.rawValue <= right.rawValue
@@ -15,7 +15,7 @@ internal extension LogLevel {
 
 }
 
-internal struct Log {
+struct Log {
 
     #if DEBUG
     static var logLevel: LogLevel = .debug

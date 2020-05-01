@@ -6,7 +6,7 @@ protocol TCNEncounter {
     var tcn: TemporaryContactNumber { get }
     var firstTime: Date { get }
     var lastTime: Date { get }
-    var closestRSSI: Double { get }
+    var closestDistance: Double { get }
     var linkedReport: IncomingTCNReport? { get }
 }
 
@@ -26,16 +26,25 @@ protocol OutgoingTCNReport {
 
 protocol TCNDataStore {
 
-    func saveEncounteredTCN(_ tcn: TemporaryContactNumber, timestamp: Date, rssi: Double) throws
+    func saveEncounteredTCN(_ tcn: TemporaryContactNumber, timestamp: Date, distance: Double) throws
     func loadTCNEncounters(fromDate: Date?) throws -> [TCNEncounter]
     func cleanupOldEncounters(untilDate: Date) throws
 
-    func saveOutgoingReport(_ report: OutgoingTCNReport) throws
+    @discardableResult
+    func saveOutgoingReport(_ report: TCNClient.SignedReport, dateCreated: Date) throws -> OutgoingTCNReport
+    func markReportSubmitted(_ report: OutgoingTCNReport, onDate date: Date) throws
     func fetchOutgoingReports(onlyNotSent: Bool) throws -> [OutgoingTCNReport]
 
-    func saveIncomingReport(_ report: IncomingTCNReport) throws
-    func fetchIncomingReports(onlyUnprocessed: Bool) throws -> [IncomingTCNReport]
+    func saveIncomingReports(_ reports: [TCNClient.Report], dateReceived: Date) throws
+    func fetchIncomingReports(processed: Bool) throws -> [IncomingTCNReport]
     func deleteIncomingReports(_ reports: [IncomingTCNReport]) throws
 
-    func linkEncounter(_ encounter: TCNEncounter, toReport report: IncomingTCNReport) throws
+    func linkEncounters(_ encounters: [TCNEncounter], toReport report: IncomingTCNReport) throws
+}
+
+enum TCNDataError: Error {
+    case initializationFailure
+    case writeFailure
+    case readFailure
+    case invalidDataFormat
 }
