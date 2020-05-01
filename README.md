@@ -12,10 +12,6 @@ SDK features include:
 * periodic downloading of new reports from ***Flaat*** servers and checking user's risk status by matching reports with TCNs received from other devices
 * uploading anonymous infection reports to ***Flaat*** servers which will be received by other users and analyzed locally on each device
 
-## Example
-
-To run the example `FlaatDemo` project, clone the repo, and run `pod install` from the Example directory first.
-
 ## Installation
 
 Importing with Cocoapods supported, however the framework hasn't been published to Cocoapods registry yet.
@@ -40,6 +36,12 @@ pod 'TCNClient', :git => 'https://github.com/TCNCoalition/tcn-client-ios.git', :
   * Uses Bluetooth LE accessories
   * Acts as a Bluetooth LE accessory
 
+5. Go to *Info* tab of your application target and add strings for `NSBluetoothAlwaysUsageDescription` and `NSBluetoothPeripheralUsageDescription` keys. The strings should be user-friendly prompts which users will see when asked for permission to use Bluetooth LE connectivity in the background.
+
+## Example
+
+To run the example `FlaatDemo` project, clone the repo, and run `pod install` from the Example directory first.
+
 ## Usage
 
 Import FlaatSDK module:
@@ -49,7 +51,7 @@ import FlaatSDK
 ```
 
 
-### Launch BLE Moniroting
+### Launch BLE Monitoring
 
 You will need `API_KEY` which is issued for each registered application and is verified by ***Flaat*** backend every time when the framework is contacting server.
 
