@@ -33,9 +33,21 @@ public struct FlaatConfiguration {
 
 public typealias RiskLevel = Double
 
-public enum ContactStatus {
-    case noContacts
-    case confirmedContacts(riskLevel: RiskLevel)
+public enum ExposureStatus {
+
+    /// No exposure doesn't guarantee that there were no contacts with infected individuals.
+    /// It only indicates that there were no recorded contacts which meet minimal criteria for health risk.
+    case noExposure
+
+    /// There were contacts with infected individuals which meet the criteria for health risk.
+    case confirmedContacts(exposures: [ExposureDetails])
+}
+
+public struct ExposureDetails {
+
+    public let date: Date
+    public let duration: TimeInterval
+    public let riskLevel: RiskLevel
 }
 
 // MARK: - FlaatService: Public Interface
@@ -60,6 +72,8 @@ public class FlaatService {
     /// Launches Bluetooth monitoring and TCN exchange, as well as periodic downloading of reports from Flaat backend.
     public func startTracing(configuration: FlaatConfiguration) throws {
         try validateConfiguration(configuration)
+        self.configuration = configuration
+        
         guard dataStore != nil else {
             throw FlaatError.dataStoreError()
         }
@@ -71,6 +85,7 @@ public class FlaatService {
             let keyStore = TCNKeyStoreImpl(secureStore: KeychainKeyStore(), unsecureKeyStore: UserDefaultsStore())
             bluetoothMonitor = try BluetoothMonitor(dataStore: dataStore, keyStore: keyStore, tcnRotationInterval: configuration.tcnRotationInterval)
             try bluetoothMonitor.startMonitoring()
+            launchPeriodicReportDownloads()
         } catch {
             throw FlaatError.dataStoreError(cause: error)
         }
@@ -97,19 +112,19 @@ public class FlaatService {
         }
     }
 
-    public func downloadAndAnalyzeReports(completion: @escaping (_ infected: Result<ContactStatus, Error>) -> Void) {
+    public func downloadAndAnalyzeReports(completion: @escaping (_ infected: Result<ExposureStatus, Error>) -> Void) {
         let reportAnalyzer = ReportAnalyzer(dataStore: dataStore, flaatAPI: flaatAPI)
         reportAnalyzer.downloadAndAnalyzeReports(completion: completion)
     }
 
-    public func getCurrentStatus() throws -> ContactStatus {
+    public func getCurrentStatus() throws -> ExposureStatus {
         let reports = try dataStore.fetchIncomingReports(processed: true)
 
         if reports.isEmpty {
-            return .noContacts
+            return .noExposure
         } else {
-            let riskLevel = RiskCalculator.calculateRiskLevel(reports: reports)
-            return .confirmedContacts(riskLevel: riskLevel)
+            let exposures = try RiskCalculator.convertReportsToExposures(reports)
+            return .confirmedContacts(exposures: exposures)
         }
     }
 }
@@ -145,4 +160,3 @@ extension FlaatService {
         }
     }
 }
-

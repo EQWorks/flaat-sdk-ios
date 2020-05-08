@@ -11,7 +11,7 @@ class ReportAnalyzer {
         self.flaatAPI = flaatAPI
     }
 
-    func downloadAndAnalyzeReports(completion: @escaping (_ result: Result<ContactStatus, Error>) -> Void) {
+    func downloadAndAnalyzeReports(completion: @escaping (_ result: Result<ExposureStatus, Error>) -> Void) {
         flaatAPI.downloadTCNReports(locations: getLocations(), verified: true, fromDate: nil) { (callResult) in
             switch callResult {
             case .failure(let error):
@@ -33,7 +33,7 @@ class ReportAnalyzer {
         }
     }
 
-    private func analyzeReports() throws -> ContactStatus {
+    private func analyzeReports() throws -> ExposureStatus {
         let encounteredTCNs = try dataStore.loadTCNEncounters(fromDate: Date().addingTimeInterval(-60.0*60*24*14))
         let encounteredTCNData = Set(encounteredTCNs.map { $0.tcn.bytes })
 
@@ -57,7 +57,7 @@ class ReportAnalyzer {
 
         try dataStore.deleteIncomingReports(reportsToDelete)
 
-        return matchedReports.isEmpty ? .noContacts : .confirmedContacts(riskLevel: RiskCalculator.calculateRiskLevel(reports: matchedReports))
+        return matchedReports.isEmpty ? .noExposure : .confirmedContacts(exposures: try RiskCalculator.convertReportsToExposures(matchedReports))
     }
 
     private func convertDataToReports(_ serializedReports: [Data]) -> [Report] {

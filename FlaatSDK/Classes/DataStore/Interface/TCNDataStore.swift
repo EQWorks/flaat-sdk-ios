@@ -15,6 +15,7 @@ protocol IncomingTCNReport {
     var tcnReport: TCNClient.Report { get }
     var dateReceived: Date { get }
     var processed: Bool { get }
+    var linkedEncounters: [TCNEncounter] { get }
 }
 
 protocol OutgoingTCNReport {

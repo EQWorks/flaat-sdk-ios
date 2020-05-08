@@ -16,6 +16,14 @@ extension IncomingTCNReportImpl: IncomingTCNReport {
     var tcnReport: TCNClient.Report {
         return try! TCNClient.Report(serializedData: reportData)
     }
+
+    var linkedEncounters: [TCNEncounter] {
+        guard let set = tcnEncounters, let encounters = set as? Set<TCNEncounterImpl> else {
+            return []
+        }
+
+        return Array(encounters)
+    }
 }
 
 // MARK: Generated accessors for tcnEncounters

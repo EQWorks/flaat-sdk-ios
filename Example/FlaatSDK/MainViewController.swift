@@ -61,7 +61,7 @@ class MainViewController: UIViewController {
                         buttonTitle: "Close")
                 case .success(let status):
                     var message = "You contacted someone with COVID-19"
-                    if case ContactStatus.noContacts = status {
+                    if case ExposureStatus.noExposure = status {
                         message = "No contacts with COVID-19 found"
                     }
                     self.showSimpleAlert(title: "Check Completed",
