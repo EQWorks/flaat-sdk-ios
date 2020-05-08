@@ -63,11 +63,10 @@ class BluetoothMonitor {
             Log.error("Bluetooth service error: \(error)")
         })
 
+        try startTCNRotation()
         bluetoothService.start()
 
         Log.debug("Started Bluetooth monitoring. Initial TCN is: \(tcn.bytes.base64EncodedString())")
-
-        try startTCNRotation()
     }
 
     func generateReport() throws -> TCNClient.SignedReport {

@@ -4,13 +4,15 @@ import TCNClient
 class ReportAnalyzer {
 
     private let dataStore: TCNDataStore
+    private let flaatAPI: FlaatAPIServer
 
-    init(dataStore: TCNDataStore) {
+    init(dataStore: TCNDataStore, flaatAPI: FlaatAPIServer) {
         self.dataStore = dataStore
+        self.flaatAPI = flaatAPI
     }
 
     func downloadAndAnalyzeReports(completion: @escaping (_ result: Result<ContactStatus, Error>) -> Void) {
-        FlaatAPI.default.downloadReports(locations: getLocations()) { (callResult) in
+        flaatAPI.downloadTCNReports(locations: getLocations(), verified: true, fromDate: nil) { (callResult) in
             switch callResult {
             case .failure(let error):
                 Log.error("Failed to download reports: \(error)")

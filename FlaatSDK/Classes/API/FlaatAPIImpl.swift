@@ -2,7 +2,14 @@ import Foundation
 
 typealias DataTaskCompletionHandler = (Data?, URLResponse?, Error?) -> Void
 
-class FlaatAPI {
+protocol FlaatAPIServer {
+
+    func uploadTCNReport(_ report: TCNReport, completion: @escaping (Result<Void, Error>) -> Void)
+    func downloadTCNReports(locations: [GeoLocation], verified: Bool, fromDate: Date?, completion: @escaping (Result<[Data], Error>) -> Void)
+
+}
+
+class FlaatServerImpl: FlaatAPIServer {
 
     struct APIEndpoints {
 
@@ -10,15 +17,17 @@ class FlaatAPI {
         static let tcnReports = "/tcnreport"
     }
 
-    static let `default` = FlaatAPI()
-
-    static var apiKey: String?
-    static var buildConfig: FlaatConfiguration.BuildConfig = .release
+    private let apiKey: String
+    private let buildConfig: FlaatConfiguration.BuildConfig
 
     private var accessToken: String?
 
-    func uploadReport(_ report: TCNReport, completion: @escaping (Result<Void, Error>) -> Void) {
-        // TODO: properly configure dev/prod endpoint switching
+    init(apiKey: String, buildConfig: FlaatConfiguration.BuildConfig = .release) {
+        self.apiKey = apiKey
+        self.buildConfig = buildConfig
+    }
+
+    func uploadTCNReport(_ report: TCNReport, completion: @escaping (Result<Void, Error>) -> Void) {
         prepareAndRunRequest(url: endpointURL(APIEndpoints.tcnReports), method: "POST", params: report.json()) { (data, response, error) in
             if let error = error {
                 completion(.failure(error))
@@ -28,7 +37,7 @@ class FlaatAPI {
         }
     }
 
-    func downloadReports(locations: [GeoLocation], verified: Bool = false, fromDate: Date? = nil, completion: @escaping (Result<[Data], Error>) -> Void) {
+    func downloadTCNReports(locations: [GeoLocation], verified: Bool, fromDate: Date?, completion: @escaping (Result<[Data], Error>) -> Void) {
         var params: [String: Any] = ["verified": verified]
 
         if let fromDate = fromDate {
@@ -126,7 +135,7 @@ class FlaatAPI {
     }
 
     private func fetchToken(completion: @escaping (Error?) -> Void) {
-        guard let apiKey = FlaatAPI.apiKey, !apiKey.isEmpty else {
+        guard !apiKey.isEmpty else {
             completion(APIError(message: "API key is missing"))
             return
         }
@@ -153,6 +162,8 @@ class FlaatAPI {
             }
 
             Log.info("Successfully logged in to the API and received access token")
+
+            // TODO: save token to keychain and try to restore it from Keychain on app launch (?)
             self.accessToken = token
             completion(nil)
         }
@@ -187,7 +198,7 @@ class FlaatAPI {
     }
 
     private func endpointURL(_ path: String) -> String {
-        return FlaatAPI.buildConfig.serviceBaseURL + path
+        return buildConfig.serviceBaseURL + path
     }
 }
 

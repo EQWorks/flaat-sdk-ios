@@ -46,6 +46,7 @@ public class FlaatService {
 
     private var configuration: FlaatConfiguration!
     private var bluetoothMonitor: BluetoothMonitor!
+    private var flaatAPI: FlaatAPIServer!
     private var dataStore: TCNDataStore!
 
     private init() {
@@ -63,8 +64,7 @@ public class FlaatService {
             throw FlaatError.dataStoreError()
         }
 
-        FlaatAPI.apiKey = configuration.apiKey
-        FlaatAPI.buildConfig = configuration.buildConfig
+        flaatAPI = FlaatServerImpl(apiKey: configuration.apiKey, buildConfig: configuration.buildConfig)
         Log.logLevel = configuration.logLevel
 
         do {
@@ -77,7 +77,7 @@ public class FlaatService {
     }
 
     public func uploadReport(days: Int = 21, validationPin: String, completion: @escaping (Error?) -> Void) {
-        let reportUploader = ReportUploader()
+        let reportUploader = ReportUploader(flaatAPI: flaatAPI)
         do {
             let tcnReport = try bluetoothMonitor.generateReport()
             let savedReport = try dataStore.saveOutgoingReport(tcnReport, dateCreated: Date())
@@ -98,7 +98,7 @@ public class FlaatService {
     }
 
     public func downloadAndAnalyzeReports(completion: @escaping (_ infected: Result<ContactStatus, Error>) -> Void) {
-        let reportAnalyzer = ReportAnalyzer(dataStore: dataStore)
+        let reportAnalyzer = ReportAnalyzer(dataStore: dataStore, flaatAPI: flaatAPI)
         reportAnalyzer.downloadAndAnalyzeReports(completion: completion)
     }
 

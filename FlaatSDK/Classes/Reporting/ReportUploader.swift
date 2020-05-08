@@ -4,6 +4,11 @@ import TCNClient
 class ReportUploader: NSObject {
 
     private let geoHashPrecision = 6
+    private let flaatAPI: FlaatAPIServer
+
+    init(flaatAPI: FlaatAPIServer) {
+        self.flaatAPI = flaatAPI
+    }
 
     func uploadReport(days: Int = 21, tcnReport: TCNClient.SignedReport, validationPin: String, completion: @escaping (Error?) -> Void) {
         Log.info("Uploading report...")
@@ -17,7 +22,7 @@ class ReportUploader: NSObject {
 
         let report = TCNReport(validationPin: validationPin, traces: reportedLocations, tcnData: try! tcnReport.serializedData())
 
-        FlaatAPI.default.uploadReport(report) { (result) in
+        flaatAPI.uploadTCNReport(report) { (result) in
             let completionError: Error?
             switch result {
             case .failure(let error):
