@@ -50,6 +50,17 @@ public struct ExposureDetails {
     public let riskLevel: RiskLevel
 }
 
+public struct ReportMetadata {
+
+    public static func `default`() -> Self {
+        return Self()
+    }
+
+    public var daysToInclude: Int = 21
+    public var validationInfo: [String: String] = [:]
+    public var patientRiskLevel: RiskLevel = 1.0
+}
+
 // MARK: - FlaatService: Public Interface
 
 public class FlaatService {
@@ -91,12 +102,14 @@ public class FlaatService {
         }
     }
 
-    public func uploadReport(days: Int = 21, validationPin: String, completion: @escaping (Error?) -> Void) {
+    public func uploadReport(metadata: ReportMetadata, completion: @escaping (Error?) -> Void) {
         let reportUploader = ReportUploader(flaatAPI: flaatAPI)
         do {
             let tcnReport = try bluetoothMonitor.generateReport()
             let savedReport = try dataStore.saveOutgoingReport(tcnReport, dateCreated: Date())
-            reportUploader.uploadReport(days: days, tcnReport: tcnReport, validationPin: validationPin, completion: { error in
+            let validationPin = metadata.validationInfo["pin"] ?? "no-pin"
+
+            reportUploader.uploadReport(days: metadata.daysToInclude, tcnReport: tcnReport, validationPin: validationPin, completion: { error in
                 if error != nil {
                     do {
                         try self.dataStore.markReportSubmitted(savedReport, onDate: Date())

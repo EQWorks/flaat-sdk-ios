@@ -19,7 +19,10 @@ class MainViewController: UIViewController {
         activityIndicator.startAnimating()
         sender.isEnabled = false
 
-        FlaatService.shared.uploadReport(validationPin: "test-pin") { [weak self] (error) in
+        var reportMetadata = ReportMetadata.default()
+        reportMetadata.validationInfo = ["pin": "test-pin"]
+
+        FlaatService.shared.uploadReport(metadata: reportMetadata) { [weak self] (error) in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 sender.isEnabled = true
